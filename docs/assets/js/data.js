@@ -41,7 +41,7 @@ window.SP_DATA = {
     },
     {
       id: "ogi-lighthouse", name: "男木島灯台", gameName: "紬の灯台・作品シンボル",
-      area: "男木島", category: "灯台", lat: 34.43340, lng: 134.06064,
+      area: "男木島", category: "灯台", lat: 34.43375, lng: 134.06069,
       precision: "high", priority: true, anime: "confirmed", status: "open", statusNote: "",
       address: "香川県高松市男木町1062-3",
       access: "男木港から徒歩約30分。灯台資料館・無料キャンプ場併設。",
@@ -171,7 +171,7 @@ window.SP_DATA = {
     // ───────────────────── 直島 ─────────────────────
     {
       id: "miyanoura-port", name: "宮浦港（直島）", gameName: "鳥白島港・最初の上陸地",
-      area: "直島", category: "港・交通", lat: 34.46160, lng: 133.99814,
+      area: "直島", category: "港・交通", lat: 34.45697, lng: 133.97408,
       precision: "high", priority: true, anime: "confirmed", status: "open", statusNote: "",
       address: "香川県香川郡直島町2249-40",
       access: "高松港からフェリー約50分（¥520）/ 高速船約25分（¥1,220）。",
@@ -264,7 +264,7 @@ window.SP_DATA = {
     // ───────────────────── 番外地（静岡・茨城） ─────────────────────
     {
       id: "kiunkaku", name: "起雲閣（玉姫の間）", gameName: "ヴェンダース家（紬の実家）",
-      area: "静岡", category: "建築", lat: 35.05934, lng: 139.07154,
+      area: "静岡", category: "建築", lat: 35.09278, lng: 139.07102,
       precision: "high", priority: false, anime: null, status: "open", statusNote: "入館料¥510",
       address: "静岡県熱海市昭和町4-2",
       access: "JR熱海駅から徒歩約15分。",
@@ -273,9 +273,9 @@ window.SP_DATA = {
     },
     {
       id: "ryugu", name: "龍宮窟（竜宮窟）", gameName: "七ヶ浜・海賊船冒険の終着点",
-      area: "静岡", category: "海・浜", lat: 34.64072, lng: 138.91574,
+      area: "静岡", category: "海・浜", lat: 34.64208, lng: 138.91563,
       precision: "high", priority: false, anime: null, status: "open", statusNote: "",
-      address: "静岡県賀茂郡南伊豆町湊",
+      address: "静岡県下田市田牛",
       access: "伊豆急行「下田駅」→石廊崎港口行きバス「休暇村」下車徒歩10分。",
       description: "波食洞窟。直径40mの天窓、上から見るとハート形。海賊船を探す冒険の終着点。ゆるキャン△聖地との重複あり。",
       warnings: [], reliability: 5, gmapsUrl: null,
