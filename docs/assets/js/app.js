@@ -120,7 +120,10 @@
   function initMap() {
     leafletMap = L.map('map', { center: [34.41, 134.03], zoom: 11 });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // OSM 日本（osm.jp）タイル: 日本語ラベルを適切なフォントで描画する。
+    // 本家 tile.openstreetmap.org はラスター画像にフォントが焼き込まれ、
+    // CJK 統合漢字が中国語字形にフォールバックするため使わない。
+    L.tileLayer('https://tile.openstreetmap.jp/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors',
       maxZoom: 19,
     }).addTo(leafletMap);
