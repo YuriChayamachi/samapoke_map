@@ -1,6 +1,7 @@
 /* Summer Pockets 聖地巡礼マップ — アプリロジック
- * 依存: vendor/leaflet/leaflet.js, assets/js/data.js (window.SP_DATA)
- * ビルド不要・APIキーなし・CDNなし（OSMタイルのみ外部）
+ * 依存: vendor/leaflet/leaflet.js, vendor/maplibre/*, assets/js/data.js (window.SP_DATA)
+ * ビルド不要・APIキーなし。JSはローカル同梱（実行時CDN不使用）。
+ * 基盤地図は OpenFreeMap のベクトルタイルを MapLibre GL で描画（タイル/フォントのみ外部）。
  */
 (function () {
   'use strict';
@@ -120,12 +121,18 @@
   function initMap() {
     leafletMap = L.map('map', { center: [34.41, 134.03], zoom: 11 });
 
-    // OSM 日本（osm.jp）タイル: 日本語ラベルを適切なフォントで描画する。
-    // 本家 tile.openstreetmap.org はラスター画像にフォントが焼き込まれ、
-    // CJK 統合漢字が中国語字形にフォールバックするため使わない。
-    L.tileLayer('https://tile.openstreetmap.jp/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors',
-      maxZoom: 19,
+    // OpenFreeMap ベクトルタイル（liberty スタイル / APIキー不要）を
+    // MapLibre GL で描画する（基盤地図のみベクトル化、オーバーレイは Leaflet）。
+    // 日本語字形はラスターと違いクライアント側で描画されるため、
+    // localIdeographFontFamily で端末の日本語フォントを使い、
+    // CJK 統合漢字が中国語字形へフォールバックするのを防ぐ。
+    L.maplibreGL({
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      attribution:
+        '<a href="https://openfreemap.org" rel="noopener noreferrer">OpenFreeMap</a> ' +
+        '&copy; <a href="https://www.openmaptiles.org/" rel="noopener noreferrer">OpenMapTiles</a> ' +
+        'Data from <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a>',
+      localIdeographFontFamily: "'Hiragino Sans','Noto Sans CJK JP','Yu Gothic',sans-serif",
     }).addTo(leafletMap);
 
     spots.forEach(function (s) {

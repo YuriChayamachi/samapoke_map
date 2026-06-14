@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Summer Pockets 聖地巡礼マップ</title>
   <meta name="description" content="Summer Pockets（サマポケ）聖地巡礼の地図・スポット一覧ビューア。男木島・女木島・直島ほかの聖地を地図とフィルタで探せます。" />
-  <!-- 同梱した Leaflet（実行時CDN不使用） -->
+  <!-- 同梱した Leaflet / MapLibre GL（JSは実行時CDN不使用。ベクトルタイルのみ外部） -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
@@ -77,10 +78,12 @@
 
   <footer class="app-footer">
     <p>聖地巡礼はマナーを守って。私有地に入らない・夜間は静かに・ゴミは持ち帰る・地元の方への敬意を最優先に。閉店施設は外観のみ、立入禁止・干潮条件のスポットは事前確認を。</p>
-    <p class="app-footer__src">データ出典: 本リポジトリ内のリサーチ資料（CSV / Markdown）。地図: © OpenStreetMap contributors。座標精度はスポットごとのバッジを参照。</p>
+    <p class="app-footer__src">データ出典: 本リポジトリ内のリサーチ資料（CSV / Markdown）。地図: © OpenFreeMap © OpenMapTiles, Data from © OpenStreetMap contributors。座標精度はスポットごとのバッジを参照。</p>
   </footer>
 
   <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/maplibre/maplibre-gl.js"></script>
+  <script src="vendor/maplibre/maplibre-gl-leaflet.js"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
