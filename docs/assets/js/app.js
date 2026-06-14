@@ -57,6 +57,13 @@
   var leafletMap;
   var markers = {};   // id → Leaflet Marker
 
+  // 現在地（geolocation）
+  var geoWatchId        = null;  // watchPosition の ID
+  var userMarker        = null;  // 現在地マーカー（divIcon）
+  var userAccuracyCircle = null; // 精度円（L.circle）
+  var firstFix          = true;  // 初回フィックスで地図を寄せるためのフラグ
+  var locateBtn         = null;  // ロケートコントロールのボタン要素
+
   /* ── ユーティリティ ──────────────────────────────── */
 
   // HTML 属性・テキストノードへの安全な挿入用エスケープ
@@ -134,6 +141,138 @@
 
       markers[s.id] = marker;
     });
+
+    addLocateControl();
+  }
+
+  /* ── 現在地（geolocation） ───────────────────────── */
+
+  // 地図右上の「現在地」ボタン（Leaflet カスタムコントロール）
+  function addLocateControl() {
+    var ctrl = L.control({ position: 'topright' });
+    ctrl.onAdd = function () {
+      var div = L.DomUtil.create('div', 'leaflet-bar locate-control');
+      var btn = L.DomUtil.create('a', 'locate-btn', div);
+      btn.href = '#';
+      btn.title = '現在地を表示';
+      btn.setAttribute('role', 'button');
+      btn.setAttribute('aria-label', '現在地を表示');
+      btn.innerHTML = '🧭';
+      // 地図のドラッグ・ズームへの伝播を止める
+      L.DomEvent.disableClickPropagation(div);
+      L.DomEvent.on(btn, 'click', function (e) {
+        L.DomEvent.preventDefault(e);
+        toggleLocate();
+      });
+      locateBtn = btn;
+      return div;
+    };
+    ctrl.addTo(leafletMap);
+  }
+
+  // ボタンの見た目を状態に応じて切替（idle / loading / active）
+  function setLocateBtnState(stateName) {
+    if (!locateBtn) return;
+    locateBtn.classList.remove('is-loading', 'is-active');
+    if (stateName === 'loading') {
+      locateBtn.innerHTML = '⏳';
+      locateBtn.classList.add('is-loading');
+    } else if (stateName === 'active') {
+      locateBtn.innerHTML = '🎯';
+      locateBtn.classList.add('is-active');
+    } else {
+      locateBtn.innerHTML = '🧭';
+    }
+  }
+
+  function toggleLocate() {
+    if (geoWatchId !== null) {
+      stopLocate();
+    } else {
+      startLocate();
+    }
+  }
+
+  function startLocate() {
+    if (!('geolocation' in navigator)) {
+      alert('お使いのブラウザは位置情報に対応していません。');
+      return;
+    }
+    setLocateBtnState('loading');
+    firstFix = true;
+    geoWatchId = navigator.geolocation.watchPosition(
+      onGeoSuccess,
+      onGeoError,
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+    );
+  }
+
+  function stopLocate() {
+    if (geoWatchId !== null) {
+      navigator.geolocation.clearWatch(geoWatchId);
+      geoWatchId = null;
+    }
+    if (userMarker)         { leafletMap.removeLayer(userMarker);         userMarker = null; }
+    if (userAccuracyCircle) { leafletMap.removeLayer(userAccuracyCircle); userAccuracyCircle = null; }
+    firstFix = true;
+    setLocateBtnState('idle');
+  }
+
+  function onGeoSuccess(pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+    var acc = pos.coords.accuracy; // メートル
+
+    // 精度円
+    if (userAccuracyCircle) {
+      userAccuracyCircle.setLatLng([lat, lng]).setRadius(acc);
+    } else {
+      userAccuracyCircle = L.circle([lat, lng], {
+        radius: acc,
+        color: '#1a73e8',
+        fillColor: '#1a73e8',
+        fillOpacity: 0.12,
+        weight: 1,
+        interactive: false,
+      }).addTo(leafletMap);
+    }
+
+    // 現在地マーカー
+    if (userMarker) {
+      userMarker.setLatLng([lat, lng]);
+    } else {
+      var icon = L.divIcon({
+        className: '',
+        html: '<div class="user-marker"></div>',
+        iconSize:   [16, 16],
+        iconAnchor: [8, 8],
+      });
+      userMarker = L.marker([lat, lng], { icon: icon, zIndexOffset: 1000, interactive: false })
+        .addTo(leafletMap);
+    }
+
+    // 初回のみ現在地へ寄せる（以降はマーカーのみ更新）
+    if (firstFix) {
+      leafletMap.setView([lat, lng], Math.max(leafletMap.getZoom(), 15), { animate: true });
+      firstFix = false;
+    }
+
+    setLocateBtnState('active');
+  }
+
+  function onGeoError(err) {
+    var msg;
+    if (err.code === err.PERMISSION_DENIED) {
+      msg = '位置情報の利用が許可されませんでした。ブラウザの設定をご確認ください。';
+    } else if (err.code === err.POSITION_UNAVAILABLE) {
+      msg = '現在地を取得できませんでした。電波状況をご確認ください。';
+    } else if (err.code === err.TIMEOUT) {
+      msg = '現在地の取得がタイムアウトしました。';
+    } else {
+      msg = '現在地の取得に失敗しました。';
+    }
+    stopLocate();
+    alert(msg);
   }
 
   // ポップアップ HTML（データは自前管理・esc()でエスケープ）

@@ -260,6 +260,39 @@ body {
 .sp-marker span { transform: rotate(45deg); font-size: 11px; }
 .sp-marker--priority { box-shadow: 0 0 0 3px var(--star), 0 1px 4px rgba(0,0,0,0.4); }
 
+/* 現在地マーカー（青ドット + パルス） */
+.user-marker {
+  position: relative;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #1a73e8;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 2px rgba(26,115,232,0.4), 0 1px 3px rgba(0,0,0,0.4);
+}
+.user-marker::after {
+  content: '';
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(26,115,232,0.5);
+  animation: user-pulse 1.6s ease-out infinite;
+}
+@keyframes user-pulse {
+  from { transform: scale(0.6); opacity: 1; }
+  to   { transform: scale(1.6); opacity: 0; }
+}
+
+/* 現在地ボタン（Leaflet コントロール） */
+.locate-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  font-size: 1.1rem; line-height: 1;
+  background: var(--white); color: var(--ink);
+  text-decoration: none; cursor: pointer;
+}
+.locate-btn:hover { background: #f4f7fa; }
+.locate-btn.is-active { background: #e8f0fe; }
+.locate-btn.is-loading { cursor: progress; }
+
 .leaflet-popup-content { margin: 10px 12px; font-size: 0.85rem; }
 .popup__name { font-weight: 700; font-size: 0.95rem; }
 .popup__game { color: var(--ink-soft); font-size: 0.78rem; margin: 2px 0 6px; }
