@@ -1,0 +1,312 @@
+/*
+ * Summer Pockets 聖地巡礼データ（統合・キュレーション版）
+ * 出典: ../MAP_PIN_座標リスト.csv / 聖地巡礼ガイド完全版.md / 追加調査_直島座標精緻化＆アニメ版新規聖地.md
+ * すべて公開リサーチ由来のデータのみ。APIキー・個人情報・秘密情報は一切含まない。
+ *
+ * 更新方法: 一次ソース（上記3ファイル）を編集したら、この配列へ手作業で反映する。
+ *   precision: high=ナビ可 / mid=DMS変換等 / low=推定 / estimate=おおよそ
+ *   anime:     new=アニメ版新規 / confirmed=ゲーム版から継続でアニメにも登場 / null
+ *   status:    open / closed（閉店）/ caution（立入・干潮など条件付き）/ null
+ */
+window.SP_DATA = {
+  meta: {
+    title: "Summer Pockets 聖地巡礼マップ",
+    subtitle: "サマポケ聖地巡礼 リサーチDB（2026-06-14版）",
+    surveyedAt: "2026-06-14",
+    reliabilityNote: "信頼性 中〜高（公式・wiki・SNS・座標データの複合確認）",
+  },
+
+  // area: 出発地 / 男木島 / 女木島 / 直島 / 静岡 / 茨城
+  spots: [
+    // ───────────────────── 出発地 ─────────────────────
+    {
+      id: "takamatsu-port", name: "高松港フェリーターミナル", gameName: "島への出発点",
+      area: "出発地", category: "港・交通", lat: 34.35235, lng: 134.04961,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市サンポート8-1",
+      access: "JR高松駅から徒歩約10分 / 空港リムジンバス約40分。女木・男木・直島行きフェリー発着地。",
+      description: "聖地巡礼の起点。ここから各島へフェリーで渡る。",
+      warnings: [], reliability: 5, gmapsUrl: "https://maps.app.goo.gl/96RVS93SoesSfRd18",
+    },
+
+    // ───────────────────── 男木島 ─────────────────────
+    {
+      id: "ogi-port", name: "男木港フェリーターミナル", gameName: "鳥白島港の入口",
+      area: "男木島", category: "港・交通", lat: 34.42225, lng: 134.05433,
+      precision: "high", priority: false, anime: "confirmed", status: "open", statusNote: "",
+      address: "香川県高松市男木町1986",
+      access: "高松港からフェリー約40分（女木島経由・¥510）。",
+      description: "男木島の玄関口。猫の島としても有名で、港周辺に猫が多い。",
+      warnings: [], reliability: 4, gmapsUrl: "https://maps.app.goo.gl/9ZBrv8qeu3dLfAjA7",
+    },
+    {
+      id: "ogi-lighthouse", name: "男木島灯台", gameName: "紬の灯台・作品シンボル",
+      area: "男木島", category: "灯台", lat: 34.43340, lng: 134.06064,
+      precision: "high", priority: true, anime: "confirmed", status: "open", statusNote: "",
+      address: "香川県高松市男木町1062-3",
+      access: "男木港から徒歩約30分。灯台資料館・無料キャンプ場併設。",
+      description: "1895年初点灯。庵治石の無塗装石造灯台（全国2基のみ）。2026/1/15 国の重要文化財指定・日本の灯台50選。紬ヴェンダースの家として登場する作品全体のビジュアルモチーフ。",
+      warnings: [], reliability: 5, gmapsUrl: "https://maps.app.goo.gl/bWKFeVb6oQHj6Hc86",
+    },
+    {
+      id: "toyotama", name: "豊玉姫神社", gameName: "静久のキービジュアル背景",
+      area: "男木島", category: "神社・祠", lat: 34.42266, lng: 134.05615,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市男木町1903",
+      access: "男木港の大鳥居から石段で約15分（展望台的役割も兼ねる）。",
+      description: "祭神は豊玉姫命。安産の神として信仰され、男木・女木・直島の氏神。加藤静久のキービジュアル背景。",
+      warnings: [], reliability: 4, gmapsUrl: "https://maps.app.goo.gl/WqMAMPFFsmoV1uv76",
+    },
+    {
+      id: "gyokyo", name: "東瀬戸漁業協同組合 男木支所", gameName: "鳥白島役場・治安維持部",
+      area: "男木島", category: "公共施設", lat: 34.42047, lng: 134.05465,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市男木町104-6",
+      access: "男木港から徒歩1分（降船後すぐ右側）。",
+      description: "作中の「役場 / 治安執行部」のモデル。港から目立つ建物。",
+      warnings: [], reliability: 3, gmapsUrl: "https://maps.app.goo.gl/u6woHxgjnUDU1N799",
+    },
+    {
+      id: "ogi-school", name: "高松市立男木小中学校", gameName: "プール・秘密基地",
+      area: "男木島", category: "公共施設", lat: 34.42001, lng: 134.05686,
+      precision: "high", priority: false, anime: "confirmed", status: "caution", statusNote: "プール撮影禁止",
+      address: "香川県高松市男木町1988",
+      access: "男木港から徒歩圏内。",
+      description: "3レーン構造のプールが出会いシーンの舞台。隣接の「秘密基地」建物は2021年に取り壊し済みで現存しない。",
+      warnings: ["プールは撮影禁止・外観のみ"], reliability: 4, gmapsUrl: "https://maps.app.goo.gl/5qnSaKyZ92tb3QweA",
+    },
+    {
+      id: "ogi-tower", name: "男木島の鉄塔", gameName: "のみきのキービジュアル背景",
+      area: "男木島", category: "ランドマーク", lat: 34.42199, lng: 134.05461,
+      precision: "mid", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市男木町",
+      access: "男木港正面。",
+      description: "港の正面に立つ特徴的な鉄塔。キービジュアル背景。",
+      warnings: [], reliability: 3, gmapsUrl: "https://maps.app.goo.gl/WN7KiJR4xTS1PW7F7",
+    },
+    {
+      id: "ogi-monument", name: "灯台裏浜辺の石碑", gameName: "神山識の鎮魂碑",
+      area: "男木島", category: "石碑", lat: 34.43355, lng: 134.06090,
+      precision: "low", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市男木町1062-3（灯台北側）",
+      access: "男木島灯台の裏側・北側砂浜。灯台に隣接。",
+      description: "RB追加キャラ「識」ルートの鎮魂碑シーン。ゲーム内では大きな石碑だが、実際はより小さい祠か岩とされる。",
+      warnings: [], reliability: 2, gmapsUrl: null,
+    },
+
+    // ───────────────────── 女木島 ─────────────────────
+    {
+      id: "megi-port", name: "女木港フェリーターミナル", gameName: "鳥白島港（女木側）",
+      area: "女木島", category: "港・交通", lat: 34.38944, lng: 134.05211,
+      precision: "high", priority: false, anime: "confirmed", status: "open", statusNote: "",
+      address: "香川県高松市女木町15-22",
+      access: "高松港からフェリー約20分（¥370）。",
+      description: "鬼ヶ島伝説の島・女木島の玄関口。鬼ヶ島大洞窟へはバスで直行可能。",
+      warnings: [], reliability: 4, gmapsUrl: "https://maps.app.goo.gl/7p7FEoP3Azq89uQz5",
+    },
+    {
+      id: "onigashima-cave", name: "鬼ヶ島大洞窟", gameName: "洞窟探索シーン",
+      area: "女木島", category: "洞窟・自然", lat: 34.39693, lng: 134.05055,
+      precision: "high", priority: true, anime: "confirmed", status: "open", statusNote: "入洞料¥500",
+      address: "香川県高松市女木町135（鷲ヶ峰中腹）",
+      access: "女木港からバス約5分（フェリー到着に合わせ運行）→終点。入洞料¥500。",
+      description: "広さ約4,000m²・奥行400m。久島鴎ルートの冒険シーン（一夜を明かす場面）の舞台。内部は約15℃と涼しく上着推奨。洞内は携帯圏外。",
+      warnings: ["洞窟内は携帯圏外・夏でも肌寒い"], reliability: 5, gmapsUrl: "https://maps.app.goo.gl/hSsTHTZzSxL58spn8",
+    },
+    {
+      id: "washigamine", name: "鷲ヶ峰展望台", gameName: "秘密基地からの眺め",
+      area: "女木島", category: "展望台", lat: 34.39695, lng: 134.05074,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市女木町2633",
+      access: "鬼ヶ島大洞窟の出口から直結（徒歩すぐ）。",
+      description: "標高188m・女木島最高地点。高松市街と瀬戸内海の大パノラマ。",
+      warnings: [], reliability: 4, gmapsUrl: "https://maps.app.goo.gl/XfCoh18qan89AzJR9",
+    },
+    {
+      id: "koibitomisaki", name: "恋人岬", gameName: "ビーチ・海辺シーン",
+      area: "女木島", category: "海・浜", lat: 34.39302, lng: 134.05499,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市女木町453-1",
+      access: "女木港から南へ約400m・徒歩。",
+      description: "海辺シーンの舞台。",
+      warnings: [], reliability: 3, gmapsUrl: "https://maps.app.goo.gl/M3us8FEkeUdcE7py7",
+    },
+    {
+      id: "megi-moai", name: "女木島モアイ像", gameName: "島の象徴的ランドマーク",
+      area: "女木島", category: "アート・モニュメント", lat: 34.38949, lng: 134.05238,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市女木町15-22",
+      access: "女木港付近。",
+      description: "港付近の個性的なモアイ像。",
+      warnings: [], reliability: 3, gmapsUrl: "https://maps.app.goo.gl/dGi4M5b3REMNiDYq5",
+    },
+    {
+      id: "oni-yakata", name: "鬼の館", gameName: "鬼伝説展示・休憩所",
+      area: "女木島", category: "観光施設", lat: 34.38956, lng: 134.05246,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県高松市女木町15-22",
+      access: "女木港に隣接。",
+      description: "鬼ヶ島伝説の展示・休憩所。",
+      warnings: [], reliability: 3, gmapsUrl: "https://maps.app.goo.gl/b674WYgqZMkYNiT88",
+    },
+    {
+      id: "megi-art-panel", name: "女木港堤防アートパネル（鴎モチーフ）", gameName: "アニメ版新規",
+      area: "女木島", category: "アート・モニュメント", lat: 34.38960, lng: 134.05230,
+      precision: "estimate", priority: false, anime: "new", status: "open", statusNote: "",
+      address: "香川県高松市女木町（女木港付近）",
+      access: "女木港付近。座標は推定。",
+      description: "アニメ版（第4話）で初めて描かれた港付近のアートパネル。ゲーム版に対応なし。",
+      warnings: ["座標は推定・現地確認推奨"], reliability: 2, gmapsUrl: null,
+    },
+    {
+      id: "megi-piano", name: "帆船のピアノ彫像", gameName: "アニメ版新規",
+      area: "女木島", category: "アート・モニュメント", lat: 34.38950, lng: 134.05260,
+      precision: "estimate", priority: false, anime: "new", status: "open", statusNote: "",
+      address: "香川県高松市女木町（女木港付近）",
+      access: "女木港付近。座標は推定。",
+      description: "アニメ版（第5話）登場の現代アート作品。ゲーム版に対応なし。",
+      warnings: ["座標は推定・現地確認推奨"], reliability: 2, gmapsUrl: null,
+    },
+
+    // ───────────────────── 直島 ─────────────────────
+    {
+      id: "miyanoura-port", name: "宮浦港（直島）", gameName: "鳥白島港・最初の上陸地",
+      area: "直島", category: "港・交通", lat: 34.46160, lng: 133.99814,
+      precision: "high", priority: true, anime: "confirmed", status: "open", statusNote: "",
+      address: "香川県香川郡直島町2249-40",
+      access: "高松港からフェリー約50分（¥520）/ 高速船約25分（¥1,220）。",
+      description: "羽依里が最初に上陸する最重要の聖地。フェリーと高速船が発着し、水上アート「直島パヴィリオン」が浮かぶ。海の駅なおしまを併設。",
+      warnings: [], reliability: 5, gmapsUrl: null,
+    },
+    {
+      id: "iwata", name: "イワタコンフェクト跡（駄菓子屋）", gameName: "空門蒼のバイト先",
+      area: "直島", category: "商店・宿", lat: 34.46052, lng: 133.97464,
+      precision: "high", priority: false, anime: "confirmed", status: "closed", statusNote: "2023年2月末 閉店（60年の歴史）",
+      address: "香川県香川郡直島町宮ノ浦2310-1",
+      access: "宮浦港から徒歩約10分。",
+      description: "空門蒼のバイト先「駄菓子屋」。閉業済みだが建物は現存し、有志によるサマポケ関連イラスト展示・訪問者ノートあり。アニメ第1話・PVに登場。座標はYahoo Mapsの高精度値。",
+      warnings: ["閉業済み・外観のみ"], reliability: 4, gmapsUrl: null,
+    },
+    {
+      id: "ishii", name: "石井商店跡（民宿・食堂）", gameName: "加藤家・主人公の滞在先",
+      area: "直島", category: "商店・宿", lat: 34.45618, lng: 133.99492,
+      precision: "mid", priority: false, anime: "confirmed", status: "closed", statusNote: "2024年12月31日 食堂閉店",
+      address: "香川県香川郡直島町本村845-1",
+      access: "本村地区。周辺に谷脇理髪店・木製の橋。",
+      description: "作中の「加藤家 / 思い出の食堂」、主人公の滞在先。カレーうどんと聖地巡礼ノートで知られた。食堂は閉店、民宿部門の別棟が継続運営中との報告あり。アニメ複数話に登場。座標はDMS変換値。",
+      warnings: ["食堂は閉店・外観のみ"], reliability: 3, gmapsUrl: null,
+    },
+    {
+      id: "dam", name: "直島ダム（ため池）", gameName: "しろはの「れいだ～ん」シーン",
+      area: "直島", category: "ダム・水辺", lat: 34.45892, lng: 133.98497,
+      precision: "low", priority: false, anime: "confirmed", status: "caution", statusNote: "GPS精度低・現地実測推奨",
+      address: "香川県香川郡直島町宮ノ浦1537付近",
+      access: "直島町立小中学校（34.45889, 133.98602）の西北西約100m。宮浦港から徒歩約50分。",
+      description: "鳴瀬しろはのキービジュアル背景。「れいだ～ん！」のシーン。公開座標データが極めて限定的なため、現地でのGPS実測を強く推奨。",
+      warnings: ["座標は推定・現地GPS実測推奨", "山林エリア・携帯信号要確認"], reliability: 2, gmapsUrl: null,
+    },
+    {
+      id: "gotanji", name: "琴弾地海水浴場", gameName: "浜辺・海の家シーン",
+      area: "直島", category: "海・浜", lat: 34.44500, lng: 133.99800,
+      precision: "low", priority: false, anime: "confirmed", status: "open", statusNote: "",
+      address: "香川県香川郡直島町積浦",
+      access: "宮浦港から町営バスで終点下車。「ふるさと海の家つつじ荘」に隣接。",
+      description: "直島で唯一・最大の砂浜。夏シーン多数。アニメ第1話の「岩場・スイカオブジェ」が該当。西側の岩場がゲーム内シーンに最も合致との報告。座標は推定。",
+      warnings: ["座標は推定・現地確認推奨"], reliability: 2, gmapsUrl: null,
+    },
+    {
+      id: "benzaiten", name: "弁財天（祠）", gameName: "しろはの釣りスポット・島の外れ",
+      area: "直島", category: "神社・祠", lat: 34.45618, lng: 134.00151,
+      precision: "high", priority: false, anime: "confirmed", status: "caution", statusNote: "干潮時のみアクセス可",
+      address: "香川県香川郡直島町本村（バス停「役場前」から徒歩約1分）",
+      access: "干潮時のみ。弁財天の建物裏→波打ち際の岩場→木のトンネル→小島への海の道。",
+      description: "しろはの釣りシーンの舞台。四角い小建物で、裏側が撮影ポイント。本データ中で最も信頼性の高い座標（Google Maps リダイレクトURL解析）。",
+      warnings: ["干潮時のみアクセス可・潮位カレンダー要確認", "磯歩き・滑りにくい靴推奨"], reliability: 5,
+      gmapsUrl: "https://maps.app.goo.gl/Bo8qBRbJtDxH67D29",
+    },
+    {
+      id: "ebisu-torii", name: "恵美須神社鳥居", gameName: "浜の鳥居",
+      area: "直島", category: "神社・祠", lat: 34.45600, lng: 133.98300,
+      precision: "estimate", priority: false, anime: null, status: "open", statusNote: "",
+      address: "香川県香川郡直島町積浦（琴弾地海水浴場内）",
+      access: "琴弾地海水浴場内。座標は推定。",
+      description: "砂浜に半分埋まった鳥居。笠木の上に石を乗せると願いが叶うとされる。",
+      warnings: ["座標は推定・現地確認推奨"], reliability: 2, gmapsUrl: null,
+    },
+    {
+      id: "yama-jinja", name: "山神社（精錬所内）", gameName: "鳴瀬神社（モデル）",
+      area: "直島", category: "神社・祠", lat: 34.46100, lng: 133.99500,
+      precision: "estimate", priority: false, anime: null, status: "caution", statusNote: "関係者以外 立入禁止",
+      address: "香川県香川郡直島町（三菱マテリアル直島精錬所構内）",
+      access: "精錬所構内のため敷地外からの観覧のみ。",
+      description: "しろはの実家の神社「鳴瀬神社」のモデル。アニメ版では八幡神社として描写。",
+      warnings: ["精錬所構内・立入禁止／敷地外観覧のみ"], reliability: 3, gmapsUrl: null,
+    },
+    {
+      id: "naoshima-sento", name: "直島銭湯「I♥湯」", gameName: "アニメ版新規",
+      area: "直島", category: "アート・モニュメント", lat: 34.45797, lng: 133.97524,
+      precision: "high", priority: false, anime: "new", status: "open", statusNote: "",
+      address: "香川県香川郡直島町2252-2",
+      access: "宮浦港から徒歩約2分。",
+      description: "大竹伸朗作の実際に入浴できるアート銭湯（ベネッセアートサイト）。ゲーム版に対応施設はなく、アニメ版で新規に登場。",
+      warnings: [], reliability: 4, gmapsUrl: null,
+    },
+    {
+      id: "hachiman", name: "八幡神社", gameName: "アニメ第1話の鳥居シーン",
+      area: "直島", category: "神社・祠", lat: null, lng: null,
+      precision: null, priority: false, anime: "new", status: "open", statusNote: "座標未特定",
+      address: "香川県香川郡直島町（風戸）",
+      access: "座標未特定・一覧のみ掲載。",
+      description: "アニメ第1話の鳥居シーンに登場。ゲーム版「山神社」をアニメ版では八幡神社として描写したとされる。",
+      warnings: ["座標未特定"], reliability: 2, gmapsUrl: null,
+    },
+
+    // ───────────────────── 番外地（静岡・茨城） ─────────────────────
+    {
+      id: "kiunkaku", name: "起雲閣（玉姫の間）", gameName: "ヴェンダース家（紬の実家）",
+      area: "静岡", category: "建築", lat: 35.05934, lng: 139.07154,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "入館料¥510",
+      address: "静岡県熱海市昭和町4-2",
+      access: "JR熱海駅から徒歩約15分。",
+      description: "1919年（大正8年）築の別荘。紬ヴェンダースの実家「洋館」のモデル。熱海市指定有形文化財。山本有三・太宰治・谷崎潤一郎らゆかりの文豪の地。",
+      warnings: [], reliability: 5, gmapsUrl: null,
+    },
+    {
+      id: "ryugu", name: "龍宮窟（竜宮窟）", gameName: "七ヶ浜・海賊船冒険の終着点",
+      area: "静岡", category: "海・浜", lat: 34.64072, lng: 138.91574,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "静岡県賀茂郡南伊豆町湊",
+      access: "伊豆急行「下田駅」→石廊崎港口行きバス「休暇村」下車徒歩10分。",
+      description: "波食洞窟。直径40mの天窓、上から見るとハート形。海賊船を探す冒険の終着点。ゆるキャン△聖地との重複あり。",
+      warnings: [], reliability: 5, gmapsUrl: null,
+    },
+    {
+      id: "miharashi", name: "国営ひたち海浜公園「みはらしの丘」", gameName: "迷い橘・現世と常世の境",
+      area: "茨城", category: "公園", lat: 36.40648, lng: 140.59976,
+      precision: "high", priority: false, anime: null, status: "open", statusNote: "",
+      address: "茨城県ひたちなか市馬渡字大沼605-4",
+      access: "JR常磐線「勝田駅」下車→バスまたはタクシー。",
+      description: "ネモフィラの花畑（4月中旬〜GW）で有名な公園最高地点。「迷い橘 / 現世と常世の境目」のモデル。",
+      warnings: [], reliability: 5, gmapsUrl: null,
+    },
+  ],
+
+  // 推奨巡礼ルート（聖地巡礼ガイド完全版.md より）
+  routes: [
+    {
+      id: "2d1n", name: "1泊2日・香川集中プラン", note: "最も一般的。聖地巡礼 約8時間（移動含む）。",
+      days: [
+        { label: "1日目", title: "女木島", stops: ["megi-port", "megi-moai", "koibitomisaki", "onigashima-cave", "washigamine"], note: "高松港→女木島（20分）。港周辺30分→洞窟+展望台1時間半。高松市内泊。" },
+        { label: "2日目", title: "男木島", stops: ["ogi-port", "ogi-lighthouse", "toyotama", "gyokyo", "ogi-school", "ogi-tower"], note: "高松港→男木島（40分・女木経由）。灯台+資料館2時間→神社30分→港周辺1時間。" },
+      ],
+    },
+    {
+      id: "3d", name: "3日以上・充実プラン", note: "上記2日に直島を追加。直島は約6〜7時間。",
+      days: [
+        { label: "Day 1", title: "女木島", stops: ["megi-port", "onigashima-cave", "washigamine", "koibitomisaki", "megi-moai"], note: "女木島（上記同様）。" },
+        { label: "Day 2", title: "男木島", stops: ["ogi-port", "ogi-lighthouse", "toyotama", "gyokyo", "ogi-school"], note: "男木島（上記同様）。" },
+        { label: "Day 3", title: "直島", stops: ["miyanoura-port", "naoshima-sento", "iwata", "benzaiten", "dam", "gotanji", "ishii"], note: "宮浦港→レンタル電動自転車で各地へ。弁財天は干潮確認・ダムは徒歩。" },
+      ],
+    },
+  ],
+};
