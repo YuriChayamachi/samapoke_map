@@ -126,7 +126,7 @@
     // 日本語字形はラスターと違いクライアント側で描画されるため、
     // localIdeographFontFamily で端末の日本語フォントを使い、
     // CJK 統合漢字が中国語字形へフォールバックするのを防ぐ。
-    L.maplibreGL({
+    var glLayer = L.maplibreGL({
       style: 'https://tiles.openfreemap.org/styles/liberty',
       attribution:
         '<a href="https://openfreemap.org" rel="noopener noreferrer">OpenFreeMap</a> ' +
@@ -134,6 +134,12 @@
         'Data from <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a>',
       localIdeographFontFamily: "'Hiragino Sans','Noto Sans CJK JP','Yu Gothic',sans-serif",
     }).addTo(leafletMap);
+
+    // liberty スタイルはフェリー航路を描画しないため（ラスター OSM 時代は点線表示
+    // されていた）、OpenMapTiles の transportation(class=ferry) を点線で復活させる。
+    var glMap = glLayer.getMaplibreMap();
+    if (glMap.isStyleLoaded()) addFerryLayers(glMap);
+    else glMap.once('load', function () { addFerryLayers(glMap); });
 
     spots.forEach(function (s) {
       if (s.lat == null || s.lng == null) return;
@@ -161,6 +167,51 @@
 
     L.control.scale({ position: 'bottomright', metric: true, imperial: false }).addTo(leafletMap);
     addLocateControl();
+  }
+
+  // フェリー航路（点線）と航路名ラベルを MapLibre スタイルへ後付けする。
+  // name フィールドは transportation ではなく transportation_name 側にある。
+  function addFerryLayers(glMap) {
+    if (!glMap.getSource('openmaptiles')) return;  // スキーマ前提が崩れたら何もしない
+
+    if (!glMap.getLayer('sp-ferry-line')) {
+      glMap.addLayer({
+        id: 'sp-ferry-line',
+        type: 'line',
+        source: 'openmaptiles',
+        'source-layer': 'transportation',
+        filter: ['==', ['get', 'class'], 'ferry'],
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#4a82c3',
+          'line-width': 1.4,
+          'line-dasharray': [3, 3],
+          'line-opacity': 0.9,
+        },
+      });
+    }
+
+    if (!glMap.getLayer('sp-ferry-label')) {
+      glMap.addLayer({
+        id: 'sp-ferry-label',
+        type: 'symbol',
+        source: 'openmaptiles',
+        'source-layer': 'transportation_name',
+        filter: ['==', ['get', 'class'], 'ferry'],
+        layout: {
+          'symbol-placement': 'line',
+          'text-field': ['get', 'name'],
+          'text-font': ['Noto Sans Regular'],  // liberty の glyphs に存在するフォント名
+          'text-size': 11,
+          'text-letter-spacing': 0.05,
+        },
+        paint: {
+          'text-color': '#356199',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1.2,
+        },
+      });
+    }
   }
 
   /* ── 現在地（geolocation） ───────────────────────── */
