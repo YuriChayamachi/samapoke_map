@@ -336,3 +336,13 @@ body {
   body.view-list .map-wrap { display: none; }
   body.view-list .panel { display: flex; }
 }
+
+/* スケールバー */
+.leaflet-control-scale-line {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ink-soft, #8aa0b0);
+  border-top: none;
+  font-size: 0.7rem;
+  color: var(--ink, #213040);
+  padding: 1px 4px;
+}

@@ -152,6 +152,7 @@
       markers[s.id] = marker;
     });
 
+    L.control.scale({ position: 'bottomright', metric: true, imperial: false }).addTo(leafletMap);
     addLocateControl();
   }
 
