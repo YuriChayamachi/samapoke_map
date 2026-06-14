@@ -62,7 +62,7 @@
   var userMarker        = null;  // 現在地マーカー（divIcon）
   var userAccuracyCircle = null; // 精度円（L.circle）
   var firstFix          = true;  // 初回フィックスで地図を寄せるためのフラグ
-  var locateBtn         = null;  // ロケートコントロールのボタン要素
+  var locateBtns        = [];    // ロケートボタン要素の配列（パネル + 地図コントロール）
 
   /* ── ユーティリティ ──────────────────────────────── */
 
@@ -164,7 +164,7 @@
         L.DomEvent.preventDefault(e);
         toggleLocate();
       });
-      locateBtn = btn;
+      locateBtns.push(btn);
       return div;
     };
     ctrl.addTo(leafletMap);
@@ -172,16 +172,22 @@
 
   // ボタンの見た目を状態に応じて切替（idle / loading / active）
   function setLocateBtnState(stateName) {
-    if (!locateBtn) return;
-    locateBtn.classList.remove('is-loading', 'is-active');
-    if (stateName === 'loading') {
-      locateBtn.innerHTML = '⏳';
-      locateBtn.classList.add('is-loading');
-    } else if (stateName === 'active') {
-      locateBtn.innerHTML = '🎯';
-      locateBtn.classList.add('is-active');
-    } else {
-      locateBtn.innerHTML = '🧭';
+    locateBtns.forEach(function (btn) {
+      btn.classList.remove('is-loading', 'is-active');
+      if (stateName === 'loading') {
+        btn.innerHTML = '⏳ 現在地';
+        btn.classList.add('is-loading');
+      } else if (stateName === 'active') {
+        btn.innerHTML = '🎯 現在地';
+        btn.classList.add('is-active');
+      } else {
+        btn.innerHTML = btn.dataset.idleLabel || '🧭 現在地';
+      }
+    });
+    // Leaflet コントロール（地図上）のボタンはラベルを短くする
+    var mapCtrlBtn = document.querySelector('.locate-control .locate-btn');
+    if (mapCtrlBtn) {
+      mapCtrlBtn.innerHTML = stateName === 'loading' ? '⏳' : stateName === 'active' ? '🎯' : '🧭';
     }
   }
 
@@ -197,6 +203,13 @@
     if (!('geolocation' in navigator)) {
       alert('お使いのブラウザは位置情報に対応していません。');
       return;
+    }
+    // モバイルでリストビューのまま開始した場合、地図タブへ切替
+    if (document.body.classList.contains('view-list')) {
+      var mapTab = document.querySelector('.mobile-tabs__btn[data-view="map"]');
+      if (mapTab && getComputedStyle(mapTab).display !== 'none') {
+        mapTab.click();
+      }
     }
     setLocateBtnState('loading');
     firstFix = true;
@@ -749,6 +762,14 @@
     initMap();
     buildFilters();
     render();
+
+    // パネル内「現在地」ボタンの初期化
+    var panelLocateBtn = document.getElementById('locate-me');
+    if (panelLocateBtn) {
+      panelLocateBtn.dataset.idleLabel = '🧭 現在地';
+      locateBtns.push(panelLocateBtn);
+      panelLocateBtn.addEventListener('click', toggleLocate);
+    }
   }
 
   init();
