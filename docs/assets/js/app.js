@@ -64,6 +64,13 @@
   var firstFix          = true;  // 初回フィックスで地図を寄せるためのフラグ
   var locateBtns        = [];    // ロケートボタン要素の配列（パネル + 地図コントロール）
 
+  // Google Maps 風ロケートアイコン（SVG）
+  var _lsvg = ' viewBox="0 0 20 20" width="18" height="18" fill="none" stroke-width="1.8" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg"';
+  var _lcross = '<line x1="10" y1="0.5" x2="10" y2="4"/><line x1="10" y1="16" x2="10" y2="19.5"/><line x1="0.5" y1="10" x2="4" y2="10"/><line x1="16" y1="10" x2="19.5" y2="10"/>';
+  var LOCATE_SVG_IDLE    = '<svg' + _lsvg + ' stroke="#5f6368"><circle cx="10" cy="10" r="5"/>' + _lcross + '</svg>';
+  var LOCATE_SVG_LOADING = '<svg' + _lsvg + ' stroke="#1a73e8" class="locate-icon-spin"><circle cx="10" cy="10" r="5"/>' + _lcross + '</svg>';
+  var LOCATE_SVG_ACTIVE  = '<svg' + _lsvg + ' stroke="#1a73e8"><circle cx="10" cy="10" r="5"/><circle cx="10" cy="10" r="2" fill="#1a73e8" stroke="none"/>' + _lcross + '</svg>';
+
   /* ── ユーティリティ ──────────────────────────────── */
 
   // HTML 属性・テキストノードへの安全な挿入用エスケープ
@@ -157,7 +164,7 @@
       btn.title = '現在地を表示';
       btn.setAttribute('role', 'button');
       btn.setAttribute('aria-label', '現在地を表示');
-      btn.innerHTML = '🧭';
+      btn.innerHTML = LOCATE_SVG_IDLE;
       // 地図のドラッグ・ズームへの伝播を止める
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.on(btn, 'click', function (e) {
@@ -172,23 +179,26 @@
 
   // ボタンの見た目を状態に応じて切替（idle / loading / active）
   function setLocateBtnState(stateName) {
+    var icon = stateName === 'loading' ? LOCATE_SVG_LOADING
+             : stateName === 'active'  ? LOCATE_SVG_ACTIVE
+             : LOCATE_SVG_IDLE;
+
     locateBtns.forEach(function (btn) {
       btn.classList.remove('is-loading', 'is-active');
-      if (stateName === 'loading') {
-        btn.innerHTML = '⏳ 現在地';
-        btn.classList.add('is-loading');
-      } else if (stateName === 'active') {
-        btn.innerHTML = '🎯 現在地';
-        btn.classList.add('is-active');
-      } else {
-        btn.innerHTML = btn.dataset.idleLabel || '🧭 現在地';
-      }
+      if (stateName === 'loading') btn.classList.add('is-loading');
+      else if (stateName === 'active') btn.classList.add('is-active');
     });
-    // Leaflet コントロール（地図上）のボタンはラベルを短くする
-    var mapCtrlBtn = document.querySelector('.locate-control .locate-btn');
-    if (mapCtrlBtn) {
-      mapCtrlBtn.innerHTML = stateName === 'loading' ? '⏳' : stateName === 'active' ? '🎯' : '🧭';
+
+    // パネルボタン（SVG + テキスト）
+    var panelBtn = document.getElementById('locate-me');
+    if (panelBtn) {
+      var txt = stateName === 'loading' ? '取得中...' : '現在地';
+      panelBtn.innerHTML = icon + ' ' + txt;
     }
+
+    // 地図コントロール（SVG のみ）
+    var mapCtrlBtn = document.querySelector('.locate-control .locate-btn');
+    if (mapCtrlBtn) mapCtrlBtn.innerHTML = icon;
   }
 
   function toggleLocate() {
@@ -766,8 +776,8 @@
     // パネル内「現在地」ボタンの初期化
     var panelLocateBtn = document.getElementById('locate-me');
     if (panelLocateBtn) {
-      panelLocateBtn.dataset.idleLabel = '🧭 現在地';
       locateBtns.push(panelLocateBtn);
+      panelLocateBtn.innerHTML = LOCATE_SVG_IDLE + ' 現在地';
       panelLocateBtn.addEventListener('click', toggleLocate);
     }
   }

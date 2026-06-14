@@ -281,17 +281,28 @@ body {
   to   { transform: scale(1.6); opacity: 0; }
 }
 
-/* 現在地ボタン（Leaflet コントロール） */
-.locate-btn {
+/* 現在地ボタン（Leaflet コントロール）
+   .locate-control .locate-btn は specificity (0,2,0) で Leaflet の .leaflet-bar a (0,1,1) に勝つ */
+.locate-control .locate-btn {
   display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px;
-  font-size: 1.1rem; line-height: 1;
-  background: var(--white); color: var(--ink);
+  width: 36px; height: 36px;
+  background: var(--white);
   text-decoration: none; cursor: pointer;
 }
-.locate-btn:hover { background: #f4f7fa; }
-.locate-btn.is-active { background: #e8f0fe; }
-.locate-btn.is-loading { cursor: progress; }
+.locate-control .locate-btn:hover { background: #f4f7fa; }
+.locate-control .locate-btn.is-active { background: #e8f0fe; }
+.locate-control .locate-btn.is-loading { cursor: progress; }
+
+/* パネルボタン内 SVG の垂直揃え */
+#locate-me svg { vertical-align: -3px; }
+
+/* ロード中スピンアニメーション */
+.locate-icon-spin {
+  animation: locate-spin 1s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes locate-spin { to { transform: rotate(360deg); } }
 
 .leaflet-popup-content { margin: 10px 12px; font-size: 0.85rem; }
 .popup__name { font-weight: 700; font-size: 0.95rem; }
