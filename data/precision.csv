@@ -1,0 +1,5 @@
+key,label,class
+high,座標: 高精度,
+mid,座標: 中精度,
+low,座標: 低精度,tag--prec-low
+estimate,座標: 推定値,tag--prec-estimate

@@ -1,3 +1,11 @@
+---
+import { loadData } from '../lib/data.js';
+
+const data = loadData();
+// BASE_URL は astro.config.mjs の base 設定に依存し、末尾スラッシュの有無が環境で変わりうるため正規化する
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/'; // 例: "/samapoke_map/"
+---
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,9 +14,9 @@
   <title>Summer Pockets 聖地巡礼マップ</title>
   <meta name="description" content="Summer Pockets（サマポケ）聖地巡礼の地図・スポット一覧ビューア。男木島・女木島・直島ほかの聖地を地図とフィルタで探せます。" />
   <!-- 同梱した Leaflet / MapLibre GL（JSは実行時CDN不使用。ベクトルタイルのみ外部） -->
-  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href={`${base}vendor/leaflet/leaflet.css`} />
+  <link rel="stylesheet" href={`${base}vendor/maplibre/maplibre-gl.css`} />
+  <link rel="stylesheet" href={`${base}assets/css/styles.css`} />
 </head>
 <body>
   <header class="app-header">
@@ -81,10 +89,12 @@
     <p class="app-footer__src">データ出典: 本リポジトリ内のリサーチ資料（CSV / Markdown）。地図: © OpenFreeMap © OpenMapTiles, Data from © OpenStreetMap contributors。座標精度はスポットごとのバッジを参照。</p>
   </footer>
 
-  <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="vendor/maplibre/maplibre-gl.js"></script>
-  <script src="vendor/maplibre/maplibre-gl-leaflet.js"></script>
-  <script src="assets/js/data.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script is:inline src={`${base}vendor/leaflet/leaflet.js`}></script>
+  <script is:inline src={`${base}vendor/maplibre/maplibre-gl.js`}></script>
+  <script is:inline src={`${base}vendor/maplibre/maplibre-gl-leaflet.js`}></script>
+  <script is:inline define:vars={{ SP_DATA: data }}>
+    window.SP_DATA = SP_DATA;
+  </script>
+  <script is:inline src={`${base}assets/js/app.js`}></script>
 </body>
 </html>

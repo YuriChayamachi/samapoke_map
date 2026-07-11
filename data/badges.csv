@@ -1,0 +1,13 @@
+field,value,contexts,prefix,label,class,useNote,noteMode
+priority,true,popup,★,主要,tag--star,,
+priority,true,list|detail,★ ,主要聖地,tag--star,,
+anime,new,popup,🆕,アニメ新規,tag--anime,,
+anime,new,list,🆕 ,アニメ新規,tag--anime,,
+anime,new,detail,🆕 ,アニメ版新規,tag--anime,,
+anime,confirmed,detail,✅ ,アニメ登場確認,tag--anime,,
+status,closed,popup|list,,閉店,tag--closed,,
+status,closed,detail,,閉店,tag--closed,true,append
+status,caution,popup,⚠,要確認,tag--caution,,
+status,caution,list|detail,⚠ ,要確認,tag--caution,true,replace
+precision,low,list,,座標:低精度,tag--prec-low,,
+precision,estimate,list,,座標:推定,tag--prec-estimate,,

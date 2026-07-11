@@ -1,48 +1,33 @@
 /* Summer Pockets 聖地巡礼マップ — アプリロジック
- * 依存: vendor/leaflet/leaflet.js, vendor/maplibre/*, assets/js/data.js (window.SP_DATA)
- * ビルド不要・APIキーなし。JSはローカル同梱（実行時CDN不使用）。
+ * 依存: vendor/leaflet/leaflet.js, vendor/maplibre/*, window.SP_DATA
+ *   （ビルド時に Astro が data/*.csv から生成・注入。JS 側はビルド不要で動く形を維持）
+ * APIキーなし。JSはローカル同梱（実行時CDN不使用）。
  * 基盤地図は OpenFreeMap のベクトルタイルを MapLibre GL で描画（タイル/フォントのみ外部）。
+ *
+ * enum 的要素（エリア色・カテゴリアイコン・座標精度ラベル・条件バッジ）は
+ * すべて DATA.enums（= data/areas.csv, categories.csv, precision.csv, badges.csv）
+ * から構築する。新しいエリア/カテゴリ/バッジを増やす場合は CSV に行を追加するだけでよく、
+ * このファイルを変更する必要はない。
  */
 (function () {
   'use strict';
 
   var DATA   = window.SP_DATA;
   var spots  = DATA.spots;
+  var ENUMS  = DATA.enums;
 
-  /* ── 定数 ─────────────────────────────────────── */
-  var AREA_COLOR = {
-    '出発地': '#6b7785',
-    '男木島': '#e8703a',
-    '女木島': '#3aa776',
-    '直島':   '#2f7fb5',
-    '静岡':   '#9b6dd0',
-    '茨城':   '#c64b8c',
-  };
+  /* ── 定数（CSV enum から構築） ───────────────────── */
+  var AREA_ORDER = ENUMS.areas.map(function (a) { return a.area; }); // order 列で既にソート済み
+  var AREA_COLOR = {};
+  ENUMS.areas.forEach(function (a) { AREA_COLOR[a.area] = a.color; });
 
-  var CAT_ICON = {
-    '灯台':            '🔆',
-    '神社・祠':        '⛩',
-    '洞窟・自然':      '🕯',
-    '港・交通':        '⛴',
-    '展望台':          '🏔',
-    '商店・宿':        '🏘',
-    '海・浜':          '🏖',
-    'アート・モニュメント': '🎨',
-    '公共施設':        '🏛',
-    '石碑':            '🪨',
-    'ランドマーク':    '📍',
-    'ダム・水辺':      '💧',
-    '建築':            '🏛',
-    '公園':            '🌿',
-    '観光施設':        '🎫',
-  };
+  var CAT_ICON = {};
+  ENUMS.categories.forEach(function (c) { CAT_ICON[c.category] = c.icon; });
 
-  var PREC = {
-    high:     { label: '座標: 高精度', cls: '' },
-    mid:      { label: '座標: 中精度', cls: '' },
-    low:      { label: '座標: 低精度', cls: 'tag--prec-low' },
-    estimate: { label: '座標: 推定値', cls: 'tag--prec-estimate' },
-  };
+  var PREC = {};
+  ENUMS.precision.forEach(function (p) { PREC[p.key] = { label: p.label, cls: p.class }; });
+
+  var BADGES = ENUMS.badges; // [{ field, value, contexts, prefix, label, class, useNote, noteMode }]
 
   /* ── アプリ状態 ─────────────────────────────────── */
   var state = {
@@ -100,6 +85,45 @@
     span.className = 'tag ' + cls;
     span.textContent = text;
     return span;
+  }
+
+  /* ── 条件バッジ（BADGES/CSV駆動） ────────────────────
+   * badges.csv の各行は field/value が一致し、contexts に指定コンテキスト
+   * （'popup' | 'list' | 'detail'）を含む場合のみ表示対象になる。
+   * これにより新しい条件バッジ（例: 新エリア限定の注意書き）を
+   * CSV に1行追加するだけで増やせる。
+   */
+  function badgeFieldMatches(badge, s) {
+    var v = s[badge.field];
+    if (typeof v === 'boolean') return String(v) === badge.value;
+    return v === badge.value;
+  }
+
+  function badgesFor(s, context) {
+    return BADGES.filter(function (b) {
+      return b.contexts.indexOf(context) !== -1 && badgeFieldMatches(b, s);
+    });
+  }
+
+  function badgeText(badge, s) {
+    var note = s.statusNote;
+    if (badge.noteMode === 'replace') return badge.prefix + (note || badge.label);
+    if (badge.noteMode === 'append')  return badge.prefix + badge.label + ' — ' + (note || '');
+    return badge.prefix + badge.label;
+  }
+
+  // 一覧カード・詳細パネル用: DOM に mkTag() を追加
+  function appendBadges(container, s, context) {
+    badgesFor(s, context).forEach(function (b) {
+      container.appendChild(mkTag(b.class, badgeText(b, s)));
+    });
+  }
+
+  // ポップアップ用: HTML 文字列を返す（esc() 済み）
+  function badgesHtml(s, context) {
+    return badgesFor(s, context).map(function (b) {
+      return '<span class="tag ' + b.class + '">' + esc(badgeText(b, s)) + '</span> ';
+    }).join('');
   }
 
   // セクション要素（ラベル + テキスト）
@@ -362,11 +386,7 @@
 
   // ポップアップ HTML（データは自前管理・esc()でエスケープ）
   function buildPopupHtml(s) {
-    var badges = '';
-    if (s.priority)          badges += '<span class="tag tag--star">★主要</span> ';
-    if (s.anime === 'new')   badges += '<span class="tag tag--anime">🆕アニメ新規</span> ';
-    if (s.status === 'closed')  badges += '<span class="tag tag--closed">閉店</span> ';
-    if (s.status === 'caution') badges += '<span class="tag tag--caution">⚠要確認</span> ';
+    var badges = badgesHtml(s, 'popup');
 
     var link  = gmapsLink(s);
     var gLink = link
@@ -392,7 +412,7 @@
 
   /* ── フィルタ UI 構築 ─────────────────────────── */
   function buildFilters() {
-    var areaOrder = ['出発地', '男木島', '女木島', '直島', '静岡', '茨城'];
+    var areaOrder = AREA_ORDER; // areas.csv の order 列の並び
     var categories = [];
     spots.forEach(function (s) {
       if (!categories.includes(s.category)) categories.push(s.category);
@@ -542,12 +562,7 @@
       bdg.className = 'spot-card__badges';
       bdg.appendChild(mkTag('tag--area', s.area));
       bdg.appendChild(mkTag('tag--cat',  catIcon(s.category) + ' ' + s.category));
-      if (s.priority)           bdg.appendChild(mkTag('tag--star',    '★ 主要聖地'));
-      if (s.anime === 'new')    bdg.appendChild(mkTag('tag--anime',   '🆕 アニメ新規'));
-      if (s.status === 'closed') bdg.appendChild(mkTag('tag--closed', '閉店'));
-      if (s.status === 'caution') bdg.appendChild(mkTag('tag--caution', '⚠ ' + (s.statusNote || '要確認')));
-      if (s.precision === 'low')      bdg.appendChild(mkTag('tag--prec-low',      '座標:低精度'));
-      if (s.precision === 'estimate') bdg.appendChild(mkTag('tag--prec-estimate', '座標:推定'));
+      appendBadges(bdg, s, 'list');
       card.appendChild(bdg);
 
       card.onclick = function () { selectSpot(s.id, true); };
@@ -608,11 +623,7 @@
     bdg.className = 'detail__badges';
     bdg.appendChild(mkTag('tag--area', s.area));
     bdg.appendChild(mkTag('tag--cat',  catIcon(s.category) + ' ' + s.category));
-    if (s.priority) bdg.appendChild(mkTag('tag--star', '★ 主要聖地'));
-    if (s.anime === 'new')       bdg.appendChild(mkTag('tag--anime',   '🆕 アニメ版新規'));
-    if (s.anime === 'confirmed') bdg.appendChild(mkTag('tag--anime',   '✅ アニメ登場確認'));
-    if (s.status === 'closed')   bdg.appendChild(mkTag('tag--closed',  '閉店 — ' + (s.statusNote || '')));
-    if (s.status === 'caution')  bdg.appendChild(mkTag('tag--caution', '⚠ ' + (s.statusNote || '要確認')));
+    appendBadges(bdg, s, 'detail');
 
     hero.appendChild(nameEl);
     hero.appendChild(gameEl);
