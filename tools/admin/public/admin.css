@@ -1,0 +1,156 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Hiragino Sans, sans-serif;
+  color: #1f2430;
+  background: #f4f5f7;
+}
+
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: #1f2430;
+  color: #fff;
+  flex-wrap: wrap;
+}
+#topbar h1 { font-size: 15px; margin: 0; white-space: nowrap; }
+.local-badge {
+  margin-left: 8px;
+  font-size: 11px;
+  padding: 2px 6px;
+  background: #e8703a;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+#tabs { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+.tab {
+  background: #333a4d;
+  color: #cfd3dc;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.tab.active { background: #e8703a; color: #fff; }
+.tab.dirty::after { content: ' •'; color: #ffd27a; }
+
+#topActions { display: flex; align-items: center; gap: 10px; }
+#status { font-size: 12px; color: #cfd3dc; min-width: 160px; text-align: right; }
+
+button {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+button:hover { background: #f0f0f0; }
+button.danger { color: #b3261e; border-color: #e0a39d; }
+button.danger:hover { background: #fdecea; }
+#saveAllBtn, #saveTableBtn { background: #2f7fb5; color: #fff; border-color: #2f7fb5; }
+#saveAllBtn:hover, #saveTableBtn:hover { background: #256593; }
+
+#app { display: flex; height: calc(100vh - 52px); }
+
+#rowListPanel {
+  width: 280px;
+  min-width: 280px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+#rowListControls { display: flex; gap: 6px; padding: 8px; border-bottom: 1px solid #eee; }
+#rowFilter { flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+#rowList { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+#rowList li {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rowList li:hover { background: #f7f7f7; }
+#rowList li.selected { background: #fde8dd; font-weight: 600; }
+#rowList li.incomplete { color: #b3261e; }
+
+#contentPanel { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+#mapPanel { border-bottom: 1px solid #ddd; }
+#spotMap { height: 320px; width: 100%; }
+#mapPanel .hint { margin: 6px 12px; font-size: 12px; color: #666; }
+
+#formPanel { padding: 14px 18px; flex: 1; }
+#formActions { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+
+#errorBox {
+  background: #fdecea;
+  border: 1px solid #e0a39d;
+  color: #7a1f18;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.field-row { margin-bottom: 12px; }
+.field-row label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+.field-row input[type="text"],
+.field-row input[type="number"],
+.field-row input[type="search"],
+.field-row select,
+.field-row textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.field-row textarea { min-height: 60px; resize: vertical; }
+.field-row .bool-row { display: flex; align-items: center; gap: 6px; }
+.field-row .color-row { display: flex; align-items: center; gap: 8px; }
+.field-row .color-row input[type="color"] { width: 40px; height: 30px; padding: 0; border: 1px solid #ccc; }
+
+.tags-editor { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eef1f5;
+  border-radius: 12px;
+  padding: 3px 8px 3px 10px;
+  font-size: 12px;
+}
+.tag-chip button {
+  border: none;
+  background: none;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1;
+  color: #888;
+}
+.tag-chip button:hover { color: #b3261e; background: none; }
+.tags-editor select, .tags-editor input[type="text"] {
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px dashed #bbb;
+  border-radius: 12px;
+  min-width: 120px;
+}
+
+.empty-hint { color: #888; font-size: 13px; padding: 24px; }

@@ -48,7 +48,33 @@ function loadSpots() {
     warnings: r.warnings ? r.warnings.split('|') : [],
     reliability: toNumber(r.reliability),
     gmapsUrl: nullIfEmpty(r.gmapsUrl),
+    official: toBool(r.official),
+    officialUrl: nullIfEmpty(r.officialUrl),
+    refImage: nullIfEmpty(r.refImage),
+    srcAnime: toBool(r.srcAnime),
+    srcGame: toBool(r.srcGame),
+    guide: toBool(r.guide),
+    episodes: r.episodes ? r.episodes.split('|') : [],
   }));
+}
+
+// spot_id ごとの複数シーン（scenes.csv）。1スポットに複数シーン（名前・画像複数・説明）を
+// 持たせるための拡張データで、loadData() で対応する spot に scenes として付与する。
+function loadScenes() {
+  const rows = readCsv('scenes.csv');
+  const bySpot = new Map();
+  rows.forEach((r) => {
+    const list = bySpot.get(r.spot_id) || [];
+    list.push({
+      order: toNumber(r.order) ?? 0,
+      name: r.name,
+      description: r.description || '',
+      images: r.images ? r.images.split('|') : [],
+    });
+    bySpot.set(r.spot_id, list);
+  });
+  bySpot.forEach((list) => list.sort((a, b) => a.order - b.order));
+  return bySpot;
 }
 
 function loadAreas() {
@@ -106,7 +132,9 @@ function loadRoutes() {
           stops: [],
         });
       }
-      dayMap.get(s.day_label).stops.push(s.stop_id);
+      // stop は {id, travel} 形式。travel = そのスポットから次のスポットへの移動時間・距離
+      // （例 "🚶徒歩1分 🚲自転車1分未満 📍60m"）。route_stops.csv の travel 列に対応。
+      dayMap.get(s.day_label).stops.push({ id: s.stop_id, travel: s.travel || '' });
     });
 
     return {
@@ -128,9 +156,12 @@ function loadMeta() {
 }
 
 export function loadData() {
+  const scenesBySpot = loadScenes();
+  const spots = loadSpots().map((s) => ({ ...s, scenes: scenesBySpot.get(s.id) || [] }));
+
   return {
     meta: loadMeta(),
-    spots: loadSpots(),
+    spots,
     routes: loadRoutes(),
     enums: {
       areas: loadAreas(),

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>CSV 管理 — samapoke_map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <header id="topbar">
+    <h1>data/*.csv 管理ツール<span class="local-badge">ローカル専用</span></h1>
+    <div id="tabs"></div>
+    <div id="topActions">
+      <span id="status"></span>
+      <button id="saveAllBtn" type="button">変更をすべて保存</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <aside id="rowListPanel">
+      <div id="rowListControls">
+        <input id="rowFilter" type="search" placeholder="検索..." />
+        <button id="addRowBtn" type="button" title="行を追加">＋ 追加</button>
+      </div>
+      <ul id="rowList"></ul>
+    </aside>
+
+    <section id="contentPanel">
+      <div id="mapPanel" hidden>
+        <div id="spotMap"></div>
+        <p class="hint">地図クリックで選択中スポットの座標をセット。マーカーはドラッグで移動できます。</p>
+      </div>
+      <div id="formPanel">
+        <div id="formActions">
+          <button id="duplicateRowBtn" type="button">複製</button>
+          <button id="moveUpBtn" type="button">↑</button>
+          <button id="moveDownBtn" type="button">↓</button>
+          <button id="deleteRowBtn" type="button" class="danger">削除</button>
+          <button id="saveTableBtn" type="button">このテーブルを保存</button>
+        </div>
+        <div id="errorBox" hidden></div>
+        <form id="detailForm"></form>
+      </div>
+    </section>
+  </main>
+
+  <script src="/vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="/admin.js"></script>
+</body>
+</html>

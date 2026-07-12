@@ -11,3 +11,6 @@ status,caution,popup,⚠,要確認,tag--caution,,
 status,caution,list|detail,⚠ ,要確認,tag--caution,true,replace
 precision,low,list,,座標:低精度,tag--prec-low,,
 precision,estimate,list,,座標:推定,tag--prec-estimate,,
+guide,true,popup|list|detail,🗺 ,聖地巡礼ガイド,tag--guide,,
+srcAnime,true,popup|list|detail,📺 ,アニメ,tag--src-anime,,
+srcGame,true,popup|list|detail,🎮 ,ゲーム,tag--src-game,,

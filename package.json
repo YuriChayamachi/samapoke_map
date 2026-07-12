@@ -7,10 +7,14 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "admin": "node tools/admin/server.mjs"
   },
   "dependencies": {
     "astro": "^5.1.1",
     "csv-parse": "^5.6.0"
+  },
+  "devDependencies": {
+    "csv-stringify": "^6.8.1"
   }
 }

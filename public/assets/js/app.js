@@ -36,6 +36,9 @@
     onlyWarning:  false,
     onlyAnime:    false,
     onlyPriority: false,
+    onlyAnimeSrc: false,
+    onlyGameSrc:  false,
+    onlyGuide:    false,
     query:        '',
     selectedId:   null,
   };
@@ -105,10 +108,19 @@
     });
   }
 
+  // "1" -> "1話" / "OP","ED" はそのまま
+  function formatEpisodeToken(tok) {
+    return /^\d+$/.test(tok) ? tok + '話' : tok;
+  }
+
   function badgeText(badge, s) {
     var note = s.statusNote;
     if (badge.noteMode === 'replace') return badge.prefix + (note || badge.label);
     if (badge.noteMode === 'append')  return badge.prefix + badge.label + ' — ' + (note || '');
+    // アニメバッジは登場話数をバッジ内に埋め込む: 📺 アニメ(1話,7話,OP,ED)
+    if (badge.field === 'srcAnime' && s.episodes && s.episodes.length > 0) {
+      return badge.prefix + badge.label + '(' + s.episodes.map(formatEpisodeToken).join(',') + ')';
+    }
     return badge.prefix + badge.label;
   }
 
@@ -448,9 +460,12 @@
     });
 
     var toggleDefs = [
-      { key: 'onlyWarning',  label: '⚠ 注意あり' },
-      { key: 'onlyAnime',    label: '🆕 アニメ新規' },
-      { key: 'onlyPriority', label: '★ 主要聖地' },
+      { key: 'onlyWarning',   label: '⚠ 注意あり' },
+      { key: 'onlyAnime',     label: '🆕 アニメ新規' },
+      { key: 'onlyPriority',  label: '★ 主要聖地' },
+      { key: 'onlyAnimeSrc',  label: '📺 アニメ' },
+      { key: 'onlyGameSrc',   label: '🎮 ゲーム' },
+      { key: 'onlyGuide',     label: '🗺 聖地巡礼ガイド' },
     ];
     var toggleEl = document.getElementById('toggle-filters');
     toggleDefs.forEach(function (def) {
@@ -484,6 +499,9 @@
     state.onlyWarning  = false;
     state.onlyAnime    = false;
     state.onlyPriority = false;
+    state.onlyAnimeSrc = false;
+    state.onlyGameSrc  = false;
+    state.onlyGuide    = false;
     state.query = '';
     document.getElementById('search').value = '';
     document.querySelectorAll('.chip.is-active').forEach(function (c) {
@@ -504,6 +522,9 @@
     if (state.onlyWarning  && s.status !== 'caution' && s.status !== 'closed') return false;
     if (state.onlyAnime    && s.anime !== 'new') return false;
     if (state.onlyPriority && !s.priority) return false;
+    if (state.onlyAnimeSrc && !s.srcAnime) return false;
+    if (state.onlyGameSrc  && !s.srcGame) return false;
+    if (state.onlyGuide    && !s.guide) return false;
     if (state.query) {
       var hay = [s.name, s.gameName, s.address, s.area, s.category, s.description]
                   .join(' ').toLowerCase();
@@ -615,10 +636,6 @@
     nameEl.className = 'detail__name';
     nameEl.textContent = s.name;
 
-    var gameEl = document.createElement('div');
-    gameEl.className = 'detail__game';
-    gameEl.textContent = 'ゲーム内呼称: ' + s.gameName;
-
     var bdg = document.createElement('div');
     bdg.className = 'detail__badges';
     bdg.appendChild(mkTag('tag--area', s.area));
@@ -626,9 +643,105 @@
     appendBadges(bdg, s, 'detail');
 
     hero.appendChild(nameEl);
-    hero.appendChild(gameEl);
+    if (s.gameName) {
+      var gameEl = document.createElement('div');
+      gameEl.className = 'detail__game';
+      gameEl.textContent = 'ゲーム内呼称: ' + s.gameName;
+      hero.appendChild(gameEl);
+    }
     hero.appendChild(bdg);
     body.appendChild(hero);
+
+    // シーンギャラリー（1スポット複数シーン。各シーン: 名前 → 画像（複数可）→ 説明）
+    if (s.scenes && s.scenes.length > 0) {
+      var scenesSec = document.createElement('div');
+      scenesSec.className = 'detail__section detail__scenes';
+      var scenesLbl = document.createElement('p');
+      scenesLbl.className = 'detail__label';
+      scenesLbl.textContent = 'シーン（' + s.scenes.length + '）';
+      scenesSec.appendChild(scenesLbl);
+
+      s.scenes.forEach(function (scene) {
+        var sceneEl = document.createElement('div');
+        sceneEl.className = 'detail__scene';
+
+        if (scene.name) {
+          var sceneName = document.createElement('p');
+          sceneName.className = 'detail__scene-name';
+          sceneName.textContent = scene.name;
+          sceneEl.appendChild(sceneName);
+        }
+
+        if (scene.images && scene.images.length > 0) {
+          var imgWrap = document.createElement('div');
+          imgWrap.className = 'detail__scene-images';
+          scene.images.forEach(function (src) {
+            var figure = document.createElement('figure');
+            figure.className = 'detail__scene-figure';
+            var img = document.createElement('img');
+            img.className = 'detail__scene-img';
+            img.src = src;
+            img.alt = scene.name || s.name;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.referrerPolicy = 'no-referrer';
+            img.onerror = function () { figure.remove(); };
+            figure.appendChild(img);
+            imgWrap.appendChild(figure);
+          });
+          sceneEl.appendChild(imgWrap);
+        }
+
+        if (scene.description) {
+          var sceneDesc = document.createElement('p');
+          sceneDesc.className = 'detail__scene-desc';
+          sceneDesc.textContent = scene.description;
+          sceneEl.appendChild(sceneDesc);
+        }
+
+        scenesSec.appendChild(sceneEl);
+      });
+
+      body.appendChild(scenesSec);
+    }
+
+    // 参考カット（公式サイト掲載画像への直リンク。読み込み失敗時は節ごと非表示。
+    // シーンギャラリーがあるスポットではシーン側が画像を担うため、無いスポットのみのフォールバック）
+    var hasScenes = s.scenes && s.scenes.length > 0;
+    if (!hasScenes && s.refImage) {
+      var refSec = document.createElement('div');
+      refSec.className = 'detail__section';
+      var refLbl = document.createElement('p');
+      refLbl.className = 'detail__label';
+      refLbl.textContent = '参考カット';
+      var figure = document.createElement('figure');
+      figure.className = 'detail__ref-figure';
+      var img = document.createElement('img');
+      img.className = 'detail__ref-img';
+      img.src = s.refImage;
+      img.alt = s.name + ' 参考カット（公式サイトより）';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = function () { refSec.remove(); };
+      figure.appendChild(img);
+      var caption = document.createElement('figcaption');
+      caption.className = 'detail__ref-caption';
+      if (s.officialUrl) {
+        var srcLink = document.createElement('a');
+        srcLink.href = s.officialUrl;
+        srcLink.target = '_blank';
+        srcLink.rel = 'noopener noreferrer';
+        srcLink.textContent = '出典: 公式サイト ↗';
+        caption.appendChild(srcLink);
+      } else {
+        caption.textContent = '出典: 公式サイト（summer-pockets.main.jp）';
+      }
+      figure.appendChild(caption);
+      refSec.appendChild(refLbl);
+      refSec.appendChild(figure);
+      body.appendChild(refSec);
+    }
 
     // 説明
     if (s.description) body.appendChild(mkSection('説明', s.description));
@@ -683,24 +796,26 @@
     if (s.address) body.appendChild(mkSection('住所', s.address));
 
     // 信頼度
-    var rSec = document.createElement('div');
-    rSec.className = 'detail__section';
-    var rLbl = document.createElement('p');
-    rLbl.className = 'detail__label';
-    rLbl.textContent = '情報信頼度';
-    var rStars = document.createElement('p');
-    rStars.className = 'detail__text';
-    var filled = document.createElement('span');
-    filled.className = 'stars';
-    filled.textContent = '★'.repeat(s.reliability);
-    var empty = document.createElement('span');
-    empty.className = 'stars__off';
-    empty.textContent = '☆'.repeat(5 - s.reliability);
-    rStars.appendChild(filled);
-    rStars.appendChild(empty);
-    rSec.appendChild(rLbl);
-    rSec.appendChild(rStars);
-    body.appendChild(rSec);
+    if (s.reliability != null) {
+      var rSec = document.createElement('div');
+      rSec.className = 'detail__section';
+      var rLbl = document.createElement('p');
+      rLbl.className = 'detail__label';
+      rLbl.textContent = '情報信頼度';
+      var rStars = document.createElement('p');
+      rStars.className = 'detail__text';
+      var filled = document.createElement('span');
+      filled.className = 'stars';
+      filled.textContent = '★'.repeat(s.reliability);
+      var empty = document.createElement('span');
+      empty.className = 'stars__off';
+      empty.textContent = '☆'.repeat(5 - s.reliability);
+      rStars.appendChild(filled);
+      rStars.appendChild(empty);
+      rSec.appendChild(rLbl);
+      rSec.appendChild(rStars);
+      body.appendChild(rSec);
+    }
 
     // アクションボタン
     var actions = document.createElement('div');
@@ -773,8 +888,8 @@
         var stopsDiv = document.createElement('div');
         stopsDiv.className = 'route-day__stops';
 
-        day.stops.forEach(function (sid) {
-          var spot = spots.find(function (x) { return x.id === sid; });
+        day.stops.forEach(function (stop, i) {
+          var spot = spots.find(function (x) { return x.id === stop.id; });
           if (!spot) return;
           var btn = document.createElement('button');
           btn.type = 'button';
@@ -785,8 +900,16 @@
               closeRoutes();
               selectSpot(spotId, true);
             };
-          })(sid);
+          })(stop.id);
           stopsDiv.appendChild(btn);
+
+          // 次のスポットへの移動時間・距離（例 "🚶徒歩1分 🚲自転車1分未満 📍60m"）
+          if (stop.travel && i < day.stops.length - 1) {
+            var travelEl = document.createElement('span');
+            travelEl.className = 'route-stop__travel';
+            travelEl.textContent = stop.travel;
+            stopsDiv.appendChild(travelEl);
+          }
         });
 
         dayDiv.appendChild(head);
