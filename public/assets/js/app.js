@@ -46,6 +46,11 @@
   var leafletMap;
   var markers = {};   // id → Leaflet Marker
 
+  // 巡礼ルート表示（地図上の線 + 経由地マーカー）
+  var routeLayer      = null;  // L.layerGroup（線 + 経由地マーカー一式）
+  var activeRouteId   = null;
+  var routesPanelBuilt = false;
+
   // 現在地（geolocation）
   var geoWatchId        = null;  // watchPosition の ID
   var userMarker        = null;  // 現在地マーカー（divIcon）
@@ -151,6 +156,14 @@
     sec.appendChild(lbl);
     sec.appendChild(body);
     return sec;
+  }
+
+  // モバイルでリストビューのまま何かを表示しようとした場合、地図タブへ切替える
+  function ensureMapVisibleOnMobile() {
+    if (document.body.classList.contains('view-list')) {
+      var mapTab = document.querySelector('.mobile-tabs__btn[data-view="map"]');
+      if (mapTab && getComputedStyle(mapTab).display !== 'none') mapTab.click();
+    }
   }
 
   /* ── Leaflet マップ ────────────────────────────── */
@@ -313,12 +326,7 @@
       return;
     }
     // モバイルでリストビューのまま開始した場合、地図タブへ切替
-    if (document.body.classList.contains('view-list')) {
-      var mapTab = document.querySelector('.mobile-tabs__btn[data-view="map"]');
-      if (mapTab && getComputedStyle(mapTab).display !== 'none') {
-        mapTab.click();
-      }
-    }
+    ensureMapVisibleOnMobile();
     setLocateBtnState('loading');
     firstFix = true;
     geoWatchId = navigator.geolocation.watchPosition(
@@ -849,24 +857,41 @@
   document.getElementById('detail-close').onclick = closeDetail;
   document.getElementById('overlay').onclick = closeDetail;
 
-  /* ── ルート モーダル ─────────────────────────────── */
-  function openRoutes() {
-    var modal = document.getElementById('routes-modal');
-    var body  = document.getElementById('routes-body');
+  /* ── 巡礼ルート パネル（左パネルの「🚶 巡礼ルート」タブ） ────
+   * ルート名クリックで地図上に順路を描画（drawRoute）。
+   * 経由地ボタン・地図上の経由地マーカーからはスポット詳細を開ける。
+   */
+  function buildRoutesPanel() {
+    if (routesPanelBuilt) return;
+    routesPanelBuilt = true;
+
+    var body = document.getElementById('routes-body');
     body.innerHTML = '';
 
-    var h2 = document.createElement('h2');
-    h2.style.marginTop = '0';
-    h2.textContent = '🚶 推奨巡礼ルート';
-    body.appendChild(h2);
+    var intro = document.createElement('p');
+    intro.className = 'routes-intro';
+    intro.textContent = 'ルート名をタップすると、地図上に順路（スタート🚩→ゴール🏁）が表示されます。';
+    body.appendChild(intro);
+
+    var clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.id = 'clear-route';
+    clearBtn.className = 'btn btn--ghost';
+    clearBtn.textContent = '✕ ルート表示を解除';
+    clearBtn.hidden = true;
+    clearBtn.onclick = clearRoute;
+    body.appendChild(clearBtn);
 
     DATA.routes.forEach(function (route) {
       var div = document.createElement('div');
       div.className = 'route';
+      div.dataset.routeId = route.id;
 
       var title = document.createElement('h3');
       title.className = 'route__title';
       title.textContent = route.name;
+      title.onclick = function () { drawRoute(route); };
+
       var note = document.createElement('p');
       note.className = 'route__note';
       note.textContent = route.note;
@@ -896,9 +921,10 @@
           btn.className = 'route-stop';
           btn.textContent = spot.name;
           btn.onclick = (function (spotId) {
-            return function () {
-              closeRoutes();
+            return function (e) {
+              e.stopPropagation(); // ルートタイトルの drawRoute を誘発しない
               selectSpot(spotId, true);
+              ensureMapVisibleOnMobile();
             };
           })(stop.id);
           stopsDiv.appendChild(btn);
@@ -920,20 +946,104 @@
 
       body.appendChild(div);
     });
-
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
   }
 
-  function closeRoutes() {
-    var modal = document.getElementById('routes-modal');
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
+  // route.days を跨いで stop を順序通りに1本の配列へ
+  function flattenRouteStops(route) {
+    var flat = [];
+    route.days.forEach(function (day) {
+      day.stops.forEach(function (stop) { flat.push(stop); });
+    });
+    return flat;
   }
 
-  document.getElementById('show-routes').onclick = openRoutes;
-  document.querySelectorAll('[data-close-modal]').forEach(function (el) {
-    el.onclick = closeRoutes;
+  // 地図上に順路（線 + 番号付き経由地マーカー、始点=🚩緑・終点=🏁赤）を描画
+  function drawRoute(route) {
+    if (activeRouteId === route.id) {
+      clearRoute();
+      return;
+    }
+    clearRoute();
+
+    var routeSpots = flattenRouteStops(route)
+      .map(function (stop) { return spots.find(function (x) { return x.id === stop.id; }); })
+      .filter(function (spot) { return spot && spot.lat != null && spot.lng != null; });
+
+    if (routeSpots.length === 0) return;
+
+    var latlngs = routeSpots.map(function (spot) { return [spot.lat, spot.lng]; });
+
+    routeLayer = L.layerGroup();
+
+    // 白いケーシング + 本線を重ねて背景地図上でも視認しやすくする
+    L.polyline(latlngs, {
+      color: '#ffffff', weight: 7, opacity: 0.9, lineJoin: 'round', lineCap: 'round',
+    }).addTo(routeLayer);
+    L.polyline(latlngs, {
+      color: '#1f5e8a', weight: 4, opacity: 0.85, lineJoin: 'round', lineCap: 'round',
+    }).addTo(routeLayer);
+
+    routeSpots.forEach(function (spot, i) {
+      var isStart = i === 0;
+      var isGoal  = routeSpots.length > 1 && i === routeSpots.length - 1;
+      var cls   = 'route-wp' + (isStart ? ' route-wp--start' : isGoal ? ' route-wp--goal' : '');
+      var label = isStart ? '🚩' : isGoal ? '🏁' : String(i + 1);
+
+      var icon = L.divIcon({
+        className: '',
+        html: '<div class="' + cls + '"><span>' + label + '</span></div>',
+        iconSize:   [26, 26],
+        iconAnchor: [13, 13],
+      });
+
+      L.marker([spot.lat, spot.lng], { icon: icon, zIndexOffset: 500 })
+        .bindTooltip((isStart ? 'スタート: ' : isGoal ? 'ゴール: ' : (i + 1) + '. ') + spot.name, {
+          direction: 'top', offset: [0, -14],
+        })
+        .on('click', function () { selectSpot(spot.id, true); })
+        .addTo(routeLayer);
+    });
+
+    routeLayer.addTo(leafletMap);
+    leafletMap.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
+
+    activeRouteId = route.id;
+    updateRouteActiveUi();
+    ensureMapVisibleOnMobile();
+  }
+
+  function clearRoute() {
+    if (routeLayer) {
+      leafletMap.removeLayer(routeLayer);
+      routeLayer = null;
+    }
+    activeRouteId = null;
+    updateRouteActiveUi();
+  }
+
+  function updateRouteActiveUi() {
+    document.querySelectorAll('.route').forEach(function (el) {
+      el.classList.toggle('is-active', el.dataset.routeId === activeRouteId);
+    });
+    var clearBtn = document.getElementById('clear-route');
+    if (clearBtn) clearBtn.hidden = !activeRouteId;
+  }
+
+  /* ── 左パネル タブ（📋 スポット一覧 / 🚶 巡礼ルート） ─────── */
+  document.querySelectorAll('.panel-tabs__btn').forEach(function (btn) {
+    btn.onclick = function () {
+      document.querySelectorAll('.panel-tabs__btn').forEach(function (b) {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-selected', 'true');
+
+      var panel = btn.getAttribute('data-panel');
+      document.getElementById('list-view').hidden   = panel !== 'list';
+      document.getElementById('routes-view').hidden = panel !== 'routes';
+      if (panel === 'routes') buildRoutesPanel();
+    };
   });
 
   /* ── モバイルタブ ──────────────────────────────── */
@@ -950,13 +1060,13 @@
     };
   });
 
-  /* ── キーボード: Escape でパネル・モーダルを閉じる ── */
+  /* ── キーボード: Escape でパネル・ルート表示を閉じる ── */
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (document.getElementById('detail').classList.contains('is-open')) {
       closeDetail();
-    } else if (document.getElementById('routes-modal').classList.contains('is-open')) {
-      closeRoutes();
+    } else if (activeRouteId) {
+      clearRoute();
     }
   });
 

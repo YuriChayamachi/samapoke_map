@@ -38,27 +38,37 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/'; // 例: "/samapoke
   </nav>
 
   <main class="layout">
-    <!-- 左: フィルタ + 一覧 -->
-    <section class="panel" id="panel" aria-label="スポット一覧とフィルタ">
-      <div class="filters">
-        <input type="search" id="search" class="filters__search" placeholder="🔍 名前・ゲーム内呼称・住所で検索" autocomplete="off" />
-
-        <div class="filter-group" id="area-filters" aria-label="エリアで絞り込み"></div>
-
-        <details class="filter-more">
-          <summary>カテゴリ・条件で絞り込み</summary>
-          <div class="filter-group" id="category-filters" aria-label="カテゴリで絞り込み"></div>
-          <div class="filter-group" id="toggle-filters" aria-label="条件で絞り込み"></div>
-        </details>
-
-        <div class="filters__actions">
-          <button type="button" id="reset-filters" class="btn btn--ghost">フィルタをリセット</button>
-          <button type="button" id="show-routes" class="btn btn--ghost">🚶 巡礼ルート</button>
-          <button type="button" id="locate-me" class="btn btn--ghost">🧭 現在地</button>
-        </div>
+    <!-- 左: フィルタ + 一覧 / 巡礼ルート -->
+    <section class="panel" id="panel" aria-label="スポット一覧・巡礼ルート">
+      <div class="panel-tabs" role="tablist">
+        <button type="button" class="panel-tabs__btn is-active" data-panel="list" role="tab" aria-selected="true">📋 スポット一覧</button>
+        <button type="button" class="panel-tabs__btn" data-panel="routes" role="tab" aria-selected="false">🚶 巡礼ルート</button>
       </div>
 
-      <ul class="spot-list" id="spot-list" aria-label="スポット一覧"></ul>
+      <div class="panel-view" id="list-view">
+        <div class="filters">
+          <input type="search" id="search" class="filters__search" placeholder="🔍 名前・ゲーム内呼称・住所で検索" autocomplete="off" />
+
+          <div class="filter-group" id="area-filters" aria-label="エリアで絞り込み"></div>
+
+          <details class="filter-more">
+            <summary>カテゴリ・条件で絞り込み</summary>
+            <div class="filter-group" id="category-filters" aria-label="カテゴリで絞り込み"></div>
+            <div class="filter-group" id="toggle-filters" aria-label="条件で絞り込み"></div>
+          </details>
+
+          <div class="filters__actions">
+            <button type="button" id="reset-filters" class="btn btn--ghost">フィルタをリセット</button>
+            <button type="button" id="locate-me" class="btn btn--ghost">🧭 現在地</button>
+          </div>
+        </div>
+
+        <ul class="spot-list" id="spot-list" aria-label="スポット一覧"></ul>
+      </div>
+
+      <div class="panel-view" id="routes-view" hidden>
+        <div id="routes-body"></div>
+      </div>
     </section>
 
     <!-- 右: 地図 -->
@@ -72,15 +82,6 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/'; // 例: "/samapoke
     <button type="button" class="detail__close" id="detail-close" aria-label="閉じる">×</button>
     <div class="detail__body" id="detail-body"></div>
   </aside>
-
-  <!-- ルート モーダル -->
-  <div class="modal" id="routes-modal" aria-hidden="true" role="dialog" aria-label="推奨巡礼ルート">
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__content">
-      <button type="button" class="modal__close" data-close-modal aria-label="閉じる">×</button>
-      <div id="routes-body"></div>
-    </div>
-  </div>
 
   <div class="overlay" id="overlay" hidden></div>
 

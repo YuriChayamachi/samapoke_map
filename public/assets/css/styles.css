@@ -95,6 +95,28 @@ body {
   background: var(--sand);
   min-height: 0;
 }
+
+/* ───── 左パネル タブ（スポット一覧 / 巡礼ルート） ───── */
+.panel-tabs { display: flex; background: var(--white); border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+.panel-tabs__btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+.panel-tabs__btn.is-active { color: var(--sea-deep); border-bottom-color: var(--sea); font-weight: 700; }
+
+.panel-view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.panel-view[hidden] { display: none; }
+
+#routes-body { overflow-y: auto; flex: 1; min-height: 0; padding: 14px 14px 24px; }
+.routes-intro { font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 10px; }
+#clear-route { margin-bottom: 16px; }
+
 .map-wrap { flex: 1; min-height: 0; }
 #map { width: 100%; height: 100%; min-height: 320px; background: var(--sky); }
 
@@ -264,21 +286,16 @@ body {
 .detail__actions { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
 .detail__actions .btn { text-align: center; text-decoration: none; }
 
-/* ───── ルート モーダル ───── */
-.modal { position: fixed; inset: 0; z-index: 1300; display: none; }
-.modal.is-open { display: block; }
-.modal__backdrop { position: absolute; inset: 0; background: rgba(33, 48, 64, 0.5); }
-.modal__content {
-  position: relative; z-index: 1;
-  background: var(--white);
-  max-width: 640px; width: 92%;
-  margin: 6vh auto; max-height: 84vh; overflow-y: auto;
-  border-radius: 16px; padding: 22px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+/* ───── 巡礼ルート パネル ───── */
+.route { margin-bottom: 22px; padding: 10px 10px; border-radius: var(--radius); transition: background 0.15s ease; }
+.route.is-active { background: var(--sky-soft); box-shadow: 0 0 0 1px var(--sea); }
+.route__title {
+  font-size: 1.05rem; margin: 0 0 2px; color: var(--sea-deep);
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
 }
-.modal__close { position: absolute; top: 10px; right: 14px; border: none; background: transparent; font-size: 1.6rem; cursor: pointer; color: var(--ink-soft); }
-.route { margin-bottom: 22px; }
-.route__title { font-size: 1.05rem; margin: 0 0 2px; color: var(--sea-deep); }
+.route__title:hover { text-decoration: underline; }
+.route__title::before { content: '▶'; font-size: 0.65em; color: var(--sea); }
+.route.is-active .route__title::before { content: '📍'; }
 .route__note { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 10px; }
 .route-day { border-left: 3px solid var(--sea); padding: 4px 0 4px 12px; margin-bottom: 12px; }
 .route-day__head { font-weight: 700; font-size: 0.92rem; }
@@ -297,6 +314,21 @@ body {
   padding: 3px 2px;
   white-space: nowrap;
 }
+
+/* ───── 地図上のルート経由地マーカー（番号付き / 始点・終点強調） ───── */
+.route-wp {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--sea);
+  border: 2px solid var(--white);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+}
+.route-wp--start { background: #2f9e6e; font-size: 14px; }
+.route-wp--goal  { background: var(--danger); font-size: 14px; }
 
 /* ───── 地図マーカー ───── */
 .sp-marker {
