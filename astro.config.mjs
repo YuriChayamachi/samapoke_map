@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
 
 // GitHub Pages project page: https://<user>.github.io/<repo>/
 export default defineConfig({
@@ -8,4 +9,5 @@ export default defineConfig({
   build: {
     assets: 'astro-assets',
   },
+  integrations: [react()],
 });

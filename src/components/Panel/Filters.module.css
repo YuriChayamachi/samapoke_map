@@ -1,0 +1,33 @@
+.filters { padding: 12px; border-bottom: 1px solid var(--line); background: var(--white); }
+.search {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+.search:focus { outline: 2px solid var(--sea); border-color: var(--sea); }
+
+.group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink-soft);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+.chip:hover { border-color: var(--sea); }
+.chipActive { background: var(--sea); border-color: var(--sea); color: var(--white); font-weight: 600; }
+.chipArea.chipActive { background: var(--chip-color, var(--sea)); border-color: var(--chip-color, var(--sea)); }
+.chipDot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+.more { margin-top: 4px; }
+.more summary { cursor: pointer; font-size: 0.82rem; color: var(--sea-deep); padding: 4px 0; user-select: none; }
+
+.actions { display: flex; gap: 8px; margin-top: 6px; }

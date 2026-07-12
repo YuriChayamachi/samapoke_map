@@ -1,33 +1,47 @@
 // ビルド時（Node/Astro フロントマター）専用の CSV ローダ。
-// data/*.csv を読み込み、旧 window.SP_DATA と互換の形へ変換する。
+// data/*.csv を読み込み、AppData 形へ変換する。
 // enum 的要素（area/category/precision/badges）も CSV から生成するため、
 // 新しいエリア・カテゴリ・バッジを追加する際は CSV を編集するだけでよい。
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
+import type {
+  Area,
+  Badge,
+  BadgeContext,
+  Category,
+  Meta,
+  NoteMode,
+  Precision,
+  PilgrimageRoute,
+  RouteDay,
+  Scene,
+  Spot,
+  AppData,
+} from '../types/data';
 
 const DATA_DIR = fileURLToPath(new URL('../../data/', import.meta.url));
 
-function readCsv(filename) {
+function readCsv(filename: string): Record<string, string>[] {
   const content = readFileSync(DATA_DIR + filename, 'utf8');
   return parse(content, { columns: true, skip_empty_lines: true, trim: false });
 }
 
 // 空文字列を null 化（CSV では空セル = 未設定を表す）
-function nullIfEmpty(v) {
+function nullIfEmpty(v: string | undefined): string | null {
   return v === '' || v === undefined ? null : v;
 }
 
-function toNumber(v) {
+function toNumber(v: string | undefined): number | null {
   const n = nullIfEmpty(v);
   return n === null ? null : Number(n);
 }
 
-function toBool(v) {
+function toBool(v: string | undefined): boolean {
   return v === 'true';
 }
 
-function loadSpots() {
+function loadSpots(): Omit<Spot, 'scenes'>[] {
   const rows = readCsv('spots.csv');
   return rows.map((r) => ({
     id: r.id,
@@ -60,9 +74,9 @@ function loadSpots() {
 
 // spot_id ごとの複数シーン（scenes.csv）。1スポットに複数シーン（名前・画像複数・説明）を
 // 持たせるための拡張データで、loadData() で対応する spot に scenes として付与する。
-function loadScenes() {
+function loadScenes(): Map<string, Scene[]> {
   const rows = readCsv('scenes.csv');
-  const bySpot = new Map();
+  const bySpot = new Map<string, Scene[]>();
   rows.forEach((r) => {
     const list = bySpot.get(r.spot_id) || [];
     list.push({
@@ -77,51 +91,51 @@ function loadScenes() {
   return bySpot;
 }
 
-function loadAreas() {
+function loadAreas(): Area[] {
   const rows = readCsv('areas.csv');
   return rows
-    .map((r) => ({ area: r.area, color: r.color, order: toNumber(r.order) }))
+    .map((r) => ({ area: r.area, color: r.color, order: toNumber(r.order) ?? 0 }))
     .sort((a, b) => a.order - b.order);
 }
 
-function loadCategories() {
+function loadCategories(): Category[] {
   const rows = readCsv('categories.csv');
   return rows.map((r) => ({ category: r.category, icon: r.icon }));
 }
 
-function loadPrecision() {
+function loadPrecision(): Precision[] {
   const rows = readCsv('precision.csv');
   return rows.map((r) => ({ key: r.key, label: r.label, class: r.class || '' }));
 }
 
-function loadBadges() {
+function loadBadges(): Badge[] {
   const rows = readCsv('badges.csv');
   return rows.map((r) => ({
-    field: r.field,
+    field: r.field as Badge['field'],
     value: r.value,
-    contexts: r.contexts.split('|'),
+    contexts: r.contexts.split('|') as BadgeContext[],
     prefix: r.prefix || '',
     label: r.label,
     class: r.class || '',
     useNote: toBool(r.useNote),
     // noteMode: 'replace' = 統計注記があれば label の代わりに使う
     //           'append'  = 統計注記を label の後ろへ " — " 区切りで付加
-    noteMode: r.noteMode || 'none',
+    noteMode: (r.noteMode || 'none') as NoteMode,
   }));
 }
 
-function loadRoutes() {
+function loadRoutes(): PilgrimageRoute[] {
   const routeRows = readCsv('routes.csv');
   const stopRows = readCsv('route_stops.csv');
 
   return routeRows.map((route) => {
     const stopsForRoute = stopRows
       .filter((s) => s.route_id === route.route_id)
-      .sort((a, b) => toNumber(a.order) - toNumber(b.order));
+      .sort((a, b) => (toNumber(a.order) ?? 0) - (toNumber(b.order) ?? 0));
 
     // day_label の出現順を保ったまま stops をグルーピング
-    const dayOrder = [];
-    const dayMap = new Map();
+    const dayOrder: string[] = [];
+    const dayMap = new Map<string, RouteDay>();
     stopsForRoute.forEach((s) => {
       if (!dayMap.has(s.day_label)) {
         dayOrder.push(s.day_label);
@@ -134,30 +148,30 @@ function loadRoutes() {
       }
       // stop は {id, travel} 形式。travel = そのスポットから次のスポットへの移動時間・距離
       // （例 "🚶徒歩1分 🚲自転車1分未満 📍60m"）。route_stops.csv の travel 列に対応。
-      dayMap.get(s.day_label).stops.push({ id: s.stop_id, travel: s.travel || '' });
+      dayMap.get(s.day_label)!.stops.push({ id: s.stop_id, travel: s.travel || '' });
     });
 
     return {
       id: route.route_id,
       name: route.name,
       note: route.note,
-      days: dayOrder.map((label) => dayMap.get(label)),
+      days: dayOrder.map((label) => dayMap.get(label)!),
     };
   });
 }
 
-function loadMeta() {
+function loadMeta(): Meta {
   const rows = readCsv('meta.csv');
-  const meta = {};
+  const meta: Meta = {};
   rows.forEach((r) => {
     meta[r.key] = r.value;
   });
   return meta;
 }
 
-export function loadData() {
+export function loadData(): AppData {
   const scenesBySpot = loadScenes();
-  const spots = loadSpots().map((s) => ({ ...s, scenes: scenesBySpot.get(s.id) || [] }));
+  const spots: Spot[] = loadSpots().map((s) => ({ ...s, scenes: scenesBySpot.get(s.id) || [] }));
 
   return {
     meta: loadMeta(),

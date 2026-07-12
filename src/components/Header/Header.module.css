@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(120deg, var(--sea) 0%, var(--sea-deep) 100%);
+  color: var(--white);
+  box-shadow: var(--shadow);
+  flex-wrap: wrap;
+}
+.title { font-size: 1.1rem; margin: 0; font-weight: 700; }
+.subtitle { margin: 2px 0 0; font-size: 0.72rem; opacity: 0.9; }
+.meta { display: flex; align-items: center; gap: 10px; }
+.link { color: var(--white); font-size: 0.8rem; text-decoration: underline; }
+
+.count {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--white);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}

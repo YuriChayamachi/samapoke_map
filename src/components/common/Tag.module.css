@@ -1,0 +1,20 @@
+/* badges.csv の class 列の値をそのままクラス名として使う（CSVを増やすだけで
+ * バッジを追加できる設計を維持するため、ここでの命名は CSV と一致させる）。
+ */
+.tag {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag--area  { background: var(--sky-soft); color: var(--sea-deep); }
+.tag--cat   { background: #eef1f4; color: var(--ink-soft); }
+.tag--star  { background: #fcf1d8; color: #9a6a12; }
+.tag--anime { background: #f7e3f2; color: var(--anime); }
+.tag--closed{ background: #ececed; color: var(--closed); }
+.tag--caution { background: #fbe7d4; color: var(--warn); }
+.tag--prec-low, .tag--prec-estimate { background: #fdeceb; color: var(--danger); }
+.tag--guide     { background: #dff1ea; color: #1f7a5c; }
+.tag--src-anime { background: #f7e3f2; color: var(--anime); }
+.tag--src-game  { background: #e3edfb; color: var(--sea-deep); }

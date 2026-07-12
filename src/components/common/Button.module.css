@@ -1,0 +1,11 @@
+.btn {
+  border: 1px solid var(--line);
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+.ghost:hover { border-color: var(--sea); color: var(--sea-deep); }
+.primary { background: var(--sea); color: var(--white); border-color: var(--sea); }

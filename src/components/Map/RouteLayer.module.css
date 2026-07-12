@@ -1,0 +1,14 @@
+.wp {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--sea);
+  border: 2px solid var(--white);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.start { background: #2f9e6e; font-size: 14px; }
+.goal  { background: var(--danger); font-size: 14px; }

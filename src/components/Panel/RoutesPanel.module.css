@@ -1,0 +1,32 @@
+.body { overflow-y: auto; flex: 1; min-height: 0; padding: 14px 14px 24px; }
+.intro { font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 10px; }
+.clearBtn { margin-bottom: 16px; }
+
+.route { margin-bottom: 22px; padding: 10px 10px; border-radius: var(--radius); transition: background 0.15s ease; }
+.routeActive { background: var(--sky-soft); box-shadow: 0 0 0 1px var(--sea); }
+.routeTitle {
+  font-size: 1.05rem; margin: 0 0 2px; color: var(--sea-deep);
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 0; font-family: inherit; text-align: left;
+}
+.routeTitle:hover { text-decoration: underline; }
+.routeTitle::before { content: '▶'; font-size: 0.65em; color: var(--sea); }
+.routeActive .routeTitle::before { content: '📍'; }
+.routeNote { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 10px; }
+.day { border-left: 3px solid var(--sea); padding: 4px 0 4px 12px; margin-bottom: 12px; }
+.dayHead { font-weight: 700; font-size: 0.92rem; }
+.dayNote { font-size: 0.8rem; color: var(--ink-soft); margin: 2px 0 6px; }
+.stops { display: flex; flex-wrap: wrap; gap: 6px; }
+.stop {
+  font-size: 0.78rem; background: var(--sky-soft); color: var(--sea-deep);
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; cursor: pointer;
+}
+.stop:hover { background: var(--sea); color: var(--white); }
+.travel {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  padding: 3px 2px;
+  white-space: nowrap;
+}
