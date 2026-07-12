@@ -111,8 +111,12 @@ export default function Panel({
         <RoutesPanel
           routes={routes}
           spots={spots}
-          activeRouteId={activeRouteId}
-          onDrawRoute={onDrawRoute}
+          activeRoute={routes.find((r) => r.id === activeRouteId) ?? null}
+          areaColorMap={areaColorMap}
+          catIconMap={catIconMap}
+          badges={badges}
+          selectedId={selectedId}
+          onSelectRoute={onDrawRoute}
           onClearRoute={onClearRoute}
           onSelectSpot={onSelectRouteStop}
         />

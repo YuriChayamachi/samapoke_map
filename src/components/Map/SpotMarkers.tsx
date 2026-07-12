@@ -13,6 +13,8 @@ interface SpotMarkersProps {
   onMarkerClick: (id: string) => void;
   onClosePopup: () => void;
   onOpenDetail: (id: string) => void;
+  /** 巡礼ルート選択中: spot id → 通し番号。あるスポットはアイコンの代わりに番号を表示する */
+  orderMap?: Map<string, number> | null;
 }
 
 export default function SpotMarkers({
@@ -24,6 +26,7 @@ export default function SpotMarkers({
   onMarkerClick,
   onClosePopup,
   onOpenDetail,
+  orderMap,
 }: SpotMarkersProps) {
   const popupSpot = popupSpotId ? spots.find((s) => s.id === popupSpotId) : null;
   const link = popupSpot ? gmapsLink(popupSpot) : null;
@@ -32,25 +35,28 @@ export default function SpotMarkers({
     <>
       {spots
         .filter((s) => s.lat != null && s.lng != null)
-        .map((s) => (
-          <Marker
-            key={s.id}
-            longitude={s.lng as number}
-            latitude={s.lat as number}
-            anchor="bottom"
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              onMarkerClick(s.id);
-            }}
-          >
-            <div
-              className={`${styles.marker} ${s.priority ? styles.priority : ''}`}
-              style={{ background: areaColorMap[s.area] || '#6b7785' }}
+        .map((s) => {
+          const order = orderMap?.get(s.id);
+          return (
+            <Marker
+              key={s.id}
+              longitude={s.lng as number}
+              latitude={s.lat as number}
+              anchor="bottom"
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                onMarkerClick(s.id);
+              }}
             >
-              <span>{catIconMap[s.category] || '📌'}</span>
-            </div>
-          </Marker>
-        ))}
+              <div
+                className={`${styles.marker} ${s.priority ? styles.priority : ''} ${order != null ? styles.numbered : ''}`}
+                style={{ background: areaColorMap[s.area] || '#6b7785' }}
+              >
+                <span>{order != null ? order : catIconMap[s.category] || '📌'}</span>
+              </div>
+            </Marker>
+          );
+        })}
 
       {popupSpot && popupSpot.lat != null && popupSpot.lng != null && (
         <Popup

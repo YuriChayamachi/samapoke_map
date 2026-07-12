@@ -6,7 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import FerryLayers from './FerryLayers';
 import SpotMarkers from './SpotMarkers';
 import RouteLayer from './RouteLayer';
-import type { Badge, PilgrimageRoute, Spot } from '../../types/data';
+import type { Badge, Spot } from '../../types/data';
 
 export interface MapViewHandle {
   flyToSpot(lat: number, lng: number, minZoom?: number): void;
@@ -15,8 +15,8 @@ export interface MapViewHandle {
 }
 
 interface MapViewProps {
-  allSpots: Spot[];
-  visibleSpots: Spot[];
+  /** ルート選択中はそのルートのスポットに絞られたリスト、それ以外はフィルタ後の visibleSpots */
+  spots: Spot[];
   areaColorMap: Record<string, string>;
   catIconMap: Record<string, string>;
   badges: Badge[];
@@ -24,8 +24,10 @@ interface MapViewProps {
   onMarkerClick: (id: string) => void;
   onClosePopup: () => void;
   onOpenDetail: (id: string) => void;
-  activeRoute: PilgrimageRoute | null;
-  onRouteWaypointClick: (id: string) => void;
+  /** アクティブな巡礼ルートの順序解決済みスポット（線を引くため）。ルート未選択時は null */
+  activeRouteSpots: Spot[] | null;
+  /** 巡礼ルート選択中: spot id → 通し番号 */
+  orderMap: Map<string, number> | null;
 }
 
 // 基盤地図は OpenFreeMap のベクトルタイルを MapLibre GL（react-map-gl）で描画する。
@@ -33,8 +35,7 @@ interface MapViewProps {
 // で端末の日本語フォントを使い、CJK 統合漢字が中国語字形へフォールバックするのを防ぐ。
 const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
   {
-    allSpots,
-    visibleSpots,
+    spots,
     areaColorMap,
     catIconMap,
     badges,
@@ -42,8 +43,8 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     onMarkerClick,
     onClosePopup,
     onOpenDetail,
-    activeRoute,
-    onRouteWaypointClick,
+    activeRouteSpots,
+    orderMap,
   },
   ref,
 ) {
@@ -101,7 +102,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
         <FerryLayers />
 
         <SpotMarkers
-          spots={visibleSpots}
+          spots={spots}
           areaColorMap={areaColorMap}
           catIconMap={catIconMap}
           badges={badges}
@@ -109,11 +110,10 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
           onMarkerClick={onMarkerClick}
           onClosePopup={onClosePopup}
           onOpenDetail={onOpenDetail}
+          orderMap={orderMap}
         />
 
-        {activeRoute && (
-          <RouteLayer route={activeRoute} spots={allSpots} onWaypointClick={onRouteWaypointClick} />
-        )}
+        {activeRouteSpots && <RouteLayer routeSpots={activeRouteSpots} />}
       </Map>
     </section>
   );

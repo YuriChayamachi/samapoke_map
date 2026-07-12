@@ -6,7 +6,7 @@ import DetailPanel from './Detail/DetailPanel';
 import { useFilters } from '../hooks/useFilters';
 import { buildEnumMaps } from '../lib/format';
 import { resolveRouteSpots } from '../lib/routes';
-import type { AppData, PilgrimageRoute } from '../types/data';
+import type { AppData, PilgrimageRoute, Spot } from '../types/data';
 import '../styles/global.css';
 
 interface AppProps {
@@ -34,6 +34,16 @@ export default function App({ data }: AppProps) {
   const activeRoute = useMemo<PilgrimageRoute | null>(
     () => (activeRouteId ? data.routes.find((r) => r.id === activeRouteId) ?? null : null),
     [activeRouteId, data.routes],
+  );
+  // ルート選択中は地図のピンをそのルートのスポットに絞り、番号表示にする
+  const activeRouteSpots = useMemo<Spot[] | null>(
+    () => (activeRoute ? resolveRouteSpots(activeRoute, data.spots) : null),
+    [activeRoute, data.spots],
+  );
+  const mapSpots = activeRouteSpots ?? visibleSpots;
+  const orderMap = useMemo<Map<string, number> | null>(
+    () => (activeRouteSpots ? new Map(activeRouteSpots.map((s, i) => [s.id, i + 1])) : null),
+    [activeRouteSpots],
   );
   const detailSpot = detailSpotId ? spotById.get(detailSpotId) ?? null : null;
 
@@ -100,7 +110,7 @@ export default function App({ data }: AppProps) {
       s.lat as number,
     ]);
     mapViewRef.current?.fitToCoords(coords, 40);
-    ensureMapVisibleOnMobile();
+    // モバイルでもスタック（左パネル）をそのまま見せる。地図への切替はスポット選択時のみ。
   }
 
   return (
@@ -152,8 +162,7 @@ export default function App({ data }: AppProps) {
 
         <MapView
           ref={mapViewRef}
-          allSpots={data.spots}
-          visibleSpots={visibleSpots}
+          spots={mapSpots}
           areaColorMap={enumMaps.areaColor}
           catIconMap={enumMaps.catIcon}
           badges={data.enums.badges}
@@ -161,8 +170,8 @@ export default function App({ data }: AppProps) {
           onMarkerClick={handleMarkerClick}
           onClosePopup={() => setPopupSpotId(null)}
           onOpenDetail={(id) => setDetailSpotId(id)}
-          activeRoute={activeRoute}
-          onRouteWaypointClick={handleRouteStopSelect}
+          activeRouteSpots={activeRouteSpots}
+          orderMap={orderMap}
         />
       </main>
 

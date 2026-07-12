@@ -9,6 +9,7 @@
 }
 .marker span { transform: rotate(45deg); font-size: 11px; }
 .priority { box-shadow: 0 0 0 3px var(--star), 0 1px 4px rgba(0,0,0,0.4); }
+.numbered span { color: var(--white); font-weight: 700; font-size: 12px; }
 
 .popupName { font-weight: 700; font-size: 0.95rem; }
 .popupGame { color: var(--ink-soft); font-size: 0.78rem; margin: 2px 0 6px; }
