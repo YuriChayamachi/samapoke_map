@@ -10,7 +10,7 @@ export default function Header({ subtitle, visibleCount, totalCount }: HeaderPro
   return (
     <header className={styles.header}>
       <div>
-        <h1 className={styles.title}>🌊 Summer Pockets 聖地巡礼マップ</h1>
+        <h1 className={styles.title}>🦋 Summer Pockets 聖地巡礼マップ</h1>
         <p className={styles.subtitle}>{subtitle}</p>
       </div>
       <div className={styles.meta}>
