@@ -3,12 +3,12 @@
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
   border: 2px solid var(--white);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
 .marker span { transform: rotate(45deg); font-size: 11px; }
-.priority { box-shadow: 0 0 0 3px var(--star), 0 1px 4px rgba(0,0,0,0.4); }
+.priority { box-shadow: 0 0 0 3px var(--star), 0 1px 2px rgba(0,0,0,0.25); }
 .numbered span { color: var(--white); font-weight: 700; font-size: 12px; }
 
 .popupName { font-weight: 700; font-size: 0.95rem; }

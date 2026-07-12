@@ -32,7 +32,7 @@ export default function RouteLayer({ routeSpots }: RouteLayerProps) {
         id="sp-route-line"
         type="line"
         layout={{ 'line-join': 'round', 'line-cap': 'round' }}
-        paint={{ 'line-color': '#1f5e8a', 'line-width': 4, 'line-opacity': 0.85 }}
+        paint={{ 'line-color': '#2e90e9', 'line-width': 4, 'line-opacity': 0.85 }}
       />
     </Source>
   );

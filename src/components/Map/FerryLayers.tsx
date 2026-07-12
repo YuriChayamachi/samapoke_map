@@ -15,7 +15,7 @@ export default function FerryLayers() {
         filter={['==', ['get', 'class'], 'ferry']}
         layout={{ 'line-join': 'round', 'line-cap': 'round' }}
         paint={{
-          'line-color': '#4a82c3',
+          'line-color': '#2e90e9',
           'line-width': 1.4,
           'line-dasharray': [3, 3],
           'line-opacity': 0.9,
@@ -35,7 +35,7 @@ export default function FerryLayers() {
           'text-letter-spacing': 0.05,
         }}
         paint={{
-          'text-color': '#356199',
+          'text-color': '#2e90e9',
           'text-halo-color': '#ffffff',
           'text-halo-width': 1.2,
         }}

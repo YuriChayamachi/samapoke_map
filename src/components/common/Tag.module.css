@@ -9,7 +9,7 @@
   white-space: nowrap;
 }
 .tag--area  { background: var(--sky-soft); color: var(--sea-deep); }
-.tag--cat   { background: #eef1f4; color: var(--ink-soft); }
+.tag--cat   { background: var(--sky-soft); color: var(--ink-soft); }
 .tag--star  { background: #fcf1d8; color: #9a6a12; }
 .tag--anime { background: #f7e3f2; color: var(--anime); }
 .tag--closed{ background: #ececed; color: var(--closed); }

@@ -5,14 +5,14 @@
  */
 
 :root {
-  --sea:        #2f7fb5;
-  --sea-deep:   #1f5e8a;
+  --sea:        #2f9de5;
+  --sea-deep:   #2e90e9;
   --sky:        #aee0f0;
   --sky-soft:   #e8f6fb;
   --sand:       #fbf7ee;
-  --ink:        #213040;
+  --ink:        #2a2a2a;
   --ink-soft:   #5a6b7a;
-  --line:       #d7e3ea;
+  --line:       #8cd0dc;
   --white:      #ffffff;
   --warn:       #d9822b;
   --danger:     #d8534f;
@@ -20,7 +20,7 @@
   --anime:      #b5479b;
   --star:       #e8a93a;
 
-  /* エリア色 */
+  /* エリア色（島ごとの識別色。チームカラーは維持し、外枠のみ夏ポケ配色へ） */
   --area-ogi:   #e8703a;  /* 男木島 */
   --area-megi:  #3aa776;  /* 女木島 */
   --area-nao:   #2f7fb5;  /* 直島 */
@@ -28,17 +28,23 @@
   --area-iba:   #c64b8c;  /* 茨城 */
   --area-start: #6b7785;  /* 出発地 */
 
-  --shadow: 0 2px 10px rgba(31, 94, 138, 0.12);
-  --radius: 12px;
+  --shadow: 0 2px 10px rgba(46, 144, 233, 0.12);
+  --radius: 20px;
+  --radius-pill: 999px;
+  --border-accent: 2px solid #8cd0dc;
 }
 
 * { box-sizing: border-box; }
 
+/* button/input/select/textarea は UA スタイルでフォントを継承しないため、
+ * サイト全体を明朝体で統一するために明示的に継承させる。 */
+button, input, select, textarea { font-family: inherit; }
+
 html, body {
   margin: 0;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  font-family: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho",
+    "Noto Serif JP", serif;
   color: var(--ink);
   background: var(--sky-soft);
 }
@@ -106,10 +112,10 @@ body {
 /* ───── MapLibre 標準コントロール・ポップアップの見た目調整
  * （ライブラリが直接生成する DOM のためグローバルにしか当てられない） ───── */
 .maplibregl-ctrl-scale {
-  background: rgba(255, 255, 255, 0.85);
+  background: #ffffff;
   border-color: var(--ink-soft, #8aa0b0);
   font-size: 0.7rem;
-  color: var(--ink, #213040);
+  color: var(--ink, #2a2a2a);
 }
 
 .maplibregl-popup-content { font-size: 0.85rem; }
