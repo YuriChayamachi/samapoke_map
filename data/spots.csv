@@ -1,5 +1,5 @@
 id,name,gameName,area,category,lat,lng,precision,priority,anime,status,statusNote,address,access,description,warnings,reliability,gmapsUrl,official,officialUrl,refImage,srcAnime,srcGame,guide,episodes
-takamatsu-port,高松港フェリーターミナル,島への出発点,出発地,港・交通,34.35235,134.04961,high,,,open,,香川県高松市サンポート8-1,JR高松駅から徒歩約10分 / 空港リムジンバス約40分。女木・男木・直島行きフェリー発着地。,聖地巡礼の起点。ここから各島へフェリーで渡る。,,5,https://maps.app.goo.gl/96RVS93SoesSfRd18,,,,,,,
+takamatsu-port,高松港フェリーターミナル,島への出発点,出発地,港・交通,34.42586,134.05590,high,,,open,,香川県高松市サンポート8-1,JR高松駅から徒歩約10分 / 空港リムジンバス約40分。女木・男木・直島行きフェリー発着地。,聖地巡礼の起点。ここから各島へフェリーで渡る。,,5,https://maps.app.goo.gl/96RVS93SoesSfRd18,,,,,,,
 ogi-port,男木港フェリーターミナル,鳥白島港の入口,男木島,港・交通,34.42225,134.05433,high,,confirmed,open,,香川県高松市男木町1986,高松港からフェリー約40分（女木島経由・¥510）。,男木島の玄関口。猫の島としても有名で、港周辺に猫が多い。,,4,https://maps.app.goo.gl/9ZBrv8qeu3dLfAjA7,,,,,,,
 ogi-lighthouse,男木島灯台,紬の灯台・作品シンボル,男木島,灯台,34.43375,134.06069,high,true,confirmed,open,,香川県高松市男木町1062-3,男木港から徒歩約30分。灯台資料館・無料キャンプ場併設。,1895年初点灯。庵治石の無塗装石造灯台（全国2基のみ）。2026/1/15 国の重要文化財指定・日本の灯台50選。紬ヴェンダースの家として登場する作品全体のビジュアルモチーフ。,,5,https://maps.app.goo.gl/bWKFeVb6oQHj6Hc86,true,https://summer-pockets.main.jp/2024/07/30/lighthouse/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/toudai-5.jpg,true,true,true,OP|2
 toyotama,豊玉姫神社,静久のキービジュアル背景,男木島,神社・祠,34.42266,134.05615,high,,,open,,香川県高松市男木町1903,男木港の大鳥居から石段で約15分（展望台的役割も兼ねる）。,祭神は豊玉姫命。安産の神として信仰され、男木・女木・直島の氏神。加藤静久のキービジュアル背景。,,4,https://maps.app.goo.gl/WqMAMPFFsmoV1uv76,true,https://summer-pockets.main.jp/2024/07/30/shizukukv/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/sizuku-1.jpg,,true,true,
@@ -34,7 +34,7 @@ naoshima-umi-kv,海のキービジュアル,作中「海」のキービジュア
 ogi-distant-view,鳥白島遠景ポイント,鳥白島（作品全体の舞台）の遠景,男木島,展望台,34.41231649736455,134.05678368637984,high,,,open,,香川県高松市男木町（男木港周辺）,男木港周辺・フェリー上から。,鳥白島（作品の舞台）全体のモデルとされる男木島の遠景。フェリーからも見える。座標は推定。,座標は推定・現地確認推奨,2,,true,https://summer-pockets.main.jp/2024/07/27/torishirojima/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/torisirojima01.jpg,true,true,true,1
 ogi-himitukichi,秘密基地跡地,羽依里たちの秘密基地,男木島,公共施設,34.4201,134.0571,high,,,closed,2021年頃 取り壊し済み,香川県高松市男木町1988（男木小中学校プール脇）,男木港から徒歩圏内・男木小中学校プール隣接。,作中の「秘密基地」のモデルとされた建物。2021年頃に取り壊され現存しない。座標は推定。,座標は推定・現地確認推奨|建物は現存せず,1,,true,https://summer-pockets.main.jp/2024/07/29/himitukichi/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/himitu.jpg,,,,
 ogi-port-road,男木港沿いの道,港沿いの道シーン,男木島,ランドマーク,34.41968270522776,134.058521060919,high,,,open,,香川県高松市男木町（男木港東側）,男木港東側の海沿いの道。,男木港東側、漁港沿いの道。作中の港沿いの道シーンのモデルとされる。座標は推定。,座標は推定・現地確認推奨,2,,true,https://summer-pockets.main.jp/2024/07/29/port-road/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/umizoi02.jpg,true,true,true,
-ogi-countryroad,灯台への田舎道,灯台へ向かう道,男木島,ランドマーク,34.42452137185618,134.0556867952733,high,,,open,,香川県高松市男木町（男木島灯台への道中）,男木港から男木島灯台へ向かう道の途中。,男木島灯台へ向かう途中の田舎道。作中シーンのモデルとされる。座標は推定。,座標は推定・現地確認推奨,2,,true,https://summer-pockets.main.jp/2024/07/30/countryroad/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/inakamiti01.jpg,true,true,true,
+ogi-countryroad,灯台への田舎道,灯台へ向かう道,男木島,ランドマーク,34.4246595,134.0559307,high,,,open,,香川県高松市男木町（男木島灯台への道中）,男木港から男木島灯台へ向かう道の途中。,男木島灯台へ向かう途中の田舎道。作中シーンのモデルとされる。座標は推定。,座標は推定・現地確認推奨,2,,true,https://summer-pockets.main.jp/2024/07/30/countryroad/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/inakamiti01.jpg,true,true,true,
 megi-mountainroad,秘密基地への山道,洞窟探索シーンへ続く山道,女木島,洞窟・自然,34.39332443079556,134.048916367546,high,,,open,,香川県高松市女木町（鬼ヶ島大洞窟周辺）,鬼ヶ島大洞窟・鷲ヶ峰展望台周辺の山道。,鬼ヶ島大洞窟へ向かう山道。作中の秘密基地探索シーンのモデルとされる。座標は推定。,座標は推定・現地確認推奨,2,,true,https://summer-pockets.main.jp/2024/07/30/mountainroad/,https://summer-pockets.main.jp/wp-content/uploads/2024/07/himitumiti.jpg,true,,true,11
 naoshima0003,道に迷う羽依里,,直島,ランドマーク,34.46011286812662,133.9807031680101,high,,,open,,直島の中心部の路地,,,,3,,,,,true,,true,1
 naoshima0008,この道もすっかり慣れたな,,直島,ランドマーク,34.45858011752291,133.9985212176664,high,,,open,,八幡神社の南,,,,3,,,,,true,,true,17
@@ -100,7 +100,7 @@ new-ogijima-12,加藤家を目指す羽依里,,男木島,ランドマーク,34.4
 new-ogijima-13,夕焼けの帰り道②,,男木島,ランドマーク,,,,,,open,,,,,,3,,,,,true,,true,
 new-ogijima-14,静久と羽依里,,男木島,ランドマーク,,,,,,open,,,,,,3,,,,,true,,true,
 mainvisual,メインビジュアル,,直島,ランドマーク,34.4571376,133.9743309,estimate,,,open,,,,,,3,,,,,,,true,
-anime-episode1-18,蒼のお昼寝スポット,,男木島,ランドマーク,34.42604793590732,134.0558949198426,high,,,open,,,,,,3,,,,,true,,true,1
+anime-episode1-18,蒼のお昼寝スポット,,男木島,ランドマーク,34.42427,134.05577,high,,,open,,,,,,3,,,,,true,,true,1
 anime-episode2-1,鴎とすれ違う羽依里,,直島,ランドマーク,34.44899683917753,133.9803685723481,high,,,open,,,,,,3,,,,,true,,true,2
 anime-episode2-7,鳥白島の少年団の面々,,男木島,ランドマーク,34.42089442607833,134.0548164662086,high,,,open,,,,,,3,,,,,true,,true,2
 anime-episode3-1,冒頭シーン,,男木島,ランドマーク,34.41999208754985,134.0591916903718,high,,,open,,,,,,3,,,,,true,,true,3
