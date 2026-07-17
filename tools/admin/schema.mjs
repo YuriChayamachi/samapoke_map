@@ -20,6 +20,7 @@ export const TABLES = {
       'priority', 'anime', 'status', 'statusNote', 'address', 'access',
       'description', 'warnings', 'reliability', 'gmapsUrl',
       'official', 'officialUrl', 'refImage',
+      'srcAnime', 'srcGame', 'guide', 'episodes',
     ],
     fields: {
       id: { widget: 'text', required: true },
@@ -43,6 +44,10 @@ export const TABLES = {
       official: { widget: 'bool' },
       officialUrl: { widget: 'text' },
       refImage: { widget: 'text' },
+      srcAnime: { widget: 'bool' },
+      srcGame: { widget: 'bool' },
+      guide: { widget: 'bool' },
+      episodes: { widget: 'pipeTags' },
     },
   },
 

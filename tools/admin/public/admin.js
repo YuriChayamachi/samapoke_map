@@ -14,7 +14,7 @@ const selectedIndex = {}; // table -> selected row index
 let currentTable = null;
 
 let map = null;
-let markerLayer = null;
+let markers = [];
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -367,22 +367,25 @@ function renderForm(table) {
 }
 
 // ---------- 地図（spots 専用） ----------
+// メインサイト（src/components/Map/MapView.tsx）と同じ MapLibre GL JS + OpenFreeMap
+// スタイルを使用する。座標順は Leaflet の [lat, lng] ではなく [lng, lat]。
 
 function ensureMap() {
   if (map) return;
-  map = L.map('spotMap').setView([34.38, 134.02], 11); // 高松〜男木・女木島付近を初期表示
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 19,
-  }).addTo(map);
-  markerLayer = L.layerGroup().addTo(map);
+  map = new maplibregl.Map({
+    container: 'spotMap',
+    style: 'https://tiles.openfreemap.org/styles/liberty',
+    center: [134.03, 34.41], // 高松〜男木・女木島付近を初期表示
+    zoom: 11,
+    localIdeographFontFamily: "'Hiragino Sans','Noto Sans CJK JP','Yu Gothic',sans-serif",
+  });
 
   map.on('click', (e) => {
     const idx = selectedIndex.spots;
     if (idx === undefined || idx < 0) return;
     const row = TABLES.spots.rows[idx];
-    row.lat = e.latlng.lat.toFixed(5);
-    row.lng = e.latlng.lng.toFixed(5);
+    row.lat = e.lngLat.lat.toFixed(5);
+    row.lng = e.lngLat.lng.toFixed(5);
     markDirty('spots');
     renderForm('spots');
     refreshMapMarkers();
@@ -390,8 +393,9 @@ function ensureMap() {
 }
 
 function refreshMapMarkers() {
-  if (!map || !markerLayer) return;
-  markerLayer.clearLayers();
+  if (!map) return;
+  markers.forEach((m) => m.remove());
+  markers = [];
   const selIdx = selectedIndex.spots;
 
   TABLES.spots.rows.forEach((row, idx) => {
@@ -399,34 +403,39 @@ function refreshMapMarkers() {
     const lng = Number(row.lng);
     if (!row.lat || !row.lng || Number.isNaN(lat) || Number.isNaN(lng)) return;
     const isSelected = idx === selIdx;
-    const marker = L.circleMarker([lat, lng], {
-      radius: isSelected ? 9 : 6,
-      color: isSelected ? '#e8703a' : '#2f7fb5',
-      fillColor: isSelected ? '#e8703a' : '#2f7fb5',
-      fillOpacity: 0.8,
-      weight: isSelected ? 3 : 1,
+
+    const el = document.createElement('div');
+    const diameter = isSelected ? 18 : 12;
+    el.title = row.name || row.id || '(無題)';
+    el.style.width = `${diameter}px`;
+    el.style.height = `${diameter}px`;
+    el.style.borderRadius = '50%';
+    el.style.boxSizing = 'border-box';
+    el.style.cursor = 'pointer';
+    el.style.background = isSelected ? '#e8703a' : '#2f7fb5';
+    el.style.border = `${isSelected ? 3 : 1}px solid ${isSelected ? '#e8703a' : '#2f7fb5'}`;
+    el.style.opacity = '0.8';
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectRow('spots', idx);
     });
-    marker.bindTooltip(row.name || row.id || '(無題)');
-    marker.on('click', () => selectRow('spots', idx));
-    if (isSelected) {
-      marker.on('add', () => {
-        // circleMarker はドラッグ非対応のため、選択中のみドラッグ可能な通常マーカーを重ねる
-      });
-    }
-    markerLayer.addLayer(marker);
+
+    const marker = new maplibregl.Marker({ element: el, draggable: isSelected })
+      .setLngLat([lng, lat])
+      .addTo(map);
 
     if (isSelected) {
-      const dragMarker = L.marker([lat, lng], { draggable: true, opacity: 0.01 });
-      dragMarker.on('dragend', () => {
-        const pos = dragMarker.getLatLng();
+      marker.on('dragend', () => {
+        const pos = marker.getLngLat();
         row.lat = pos.lat.toFixed(5);
         row.lng = pos.lng.toFixed(5);
         markDirty('spots');
         renderForm('spots');
         refreshMapMarkers();
       });
-      markerLayer.addLayer(dragMarker);
     }
+
+    markers.push(marker);
   });
 }
 
@@ -439,7 +448,7 @@ function focusMapOnSelected() {
   const lat = Number(row.lat);
   const lng = Number(row.lng);
   if (row.lat && row.lng && !Number.isNaN(lat) && !Number.isNaN(lng)) {
-    map.setView([lat, lng], Math.max(map.getZoom(), 13));
+    map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 13) });
   }
 }
 

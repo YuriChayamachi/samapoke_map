@@ -13,9 +13,8 @@ import { validateTable } from './validate.mjs';
 const PORT = process.env.ADMIN_PORT ? Number(process.env.ADMIN_PORT) : 5174;
 const HOST = '127.0.0.1';
 
-const ROOT_DIR = fileURLToPath(new URL('../../', import.meta.url));
 const PUBLIC_DIR = fileURLToPath(new URL('./public/', import.meta.url));
-const VENDOR_LEAFLET_DIR = join(ROOT_DIR, 'public', 'vendor', 'leaflet');
+const VENDOR_MAPLIBRE_DIR = join(PUBLIC_DIR, 'vendor', 'maplibre-gl');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -84,9 +83,9 @@ const server = createServer(async (req, res) => {
       return send(res, 200, { ok: true });
     }
 
-    if (req.method === 'GET' && pathname.startsWith('/vendor/leaflet/')) {
-      const rel = pathname.slice('/vendor/leaflet/'.length);
-      if (serveStatic(res, VENDOR_LEAFLET_DIR, rel)) return;
+    if (req.method === 'GET' && pathname.startsWith('/vendor/maplibre-gl/')) {
+      const rel = pathname.slice('/vendor/maplibre-gl/'.length);
+      if (serveStatic(res, VENDOR_MAPLIBRE_DIR, rel)) return;
       return send(res, 404, { ok: false, errors: ['not found'] });
     }
 
