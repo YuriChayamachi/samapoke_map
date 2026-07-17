@@ -41,35 +41,47 @@ function toBool(v: string | undefined): boolean {
   return v === 'true';
 }
 
+// mymaps.usercontent.google.com の画像は Cross-Origin-Resource-Policy: same-site を返し、
+// ブラウザが cross-origin の <img> 描画を拒否する（取得は 200 でも表示されない）。
+// wsrv.nl 画像プロキシ経由に書き換え、埋め込み可能なヘッダ(CORP: cross-origin / ACAO: *)で
+// 再配信させる。あわせて縮小して軽量化する（元画像は 1 枚 ~2MB）。
+function proxyImage(url: string): string {
+  if (!url.includes('mymaps.usercontent.google.com')) return url;
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=1024&output=webp&q=80`;
+}
+
 function loadSpots(): Omit<Spot, 'scenes'>[] {
   const rows = readCsv('spots.csv');
-  return rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    gameName: r.gameName,
-    area: r.area,
-    category: r.category,
-    lat: toNumber(r.lat),
-    lng: toNumber(r.lng),
-    precision: nullIfEmpty(r.precision),
-    priority: toBool(r.priority),
-    anime: nullIfEmpty(r.anime),
-    status: nullIfEmpty(r.status),
-    statusNote: r.statusNote || '',
-    address: r.address || '',
-    access: r.access || '',
-    description: r.description || '',
-    warnings: r.warnings ? r.warnings.split('|') : [],
-    reliability: toNumber(r.reliability),
-    gmapsUrl: nullIfEmpty(r.gmapsUrl),
-    official: toBool(r.official),
-    officialUrl: nullIfEmpty(r.officialUrl),
-    refImage: nullIfEmpty(r.refImage),
-    srcAnime: toBool(r.srcAnime),
-    srcGame: toBool(r.srcGame),
-    guide: toBool(r.guide),
-    episodes: r.episodes ? r.episodes.split('|') : [],
-  }));
+  return rows.map((r) => {
+    const refImage = nullIfEmpty(r.refImage);
+    return {
+      id: r.id,
+      name: r.name,
+      gameName: r.gameName,
+      area: r.area,
+      category: r.category,
+      lat: toNumber(r.lat),
+      lng: toNumber(r.lng),
+      precision: nullIfEmpty(r.precision),
+      priority: toBool(r.priority),
+      anime: nullIfEmpty(r.anime),
+      status: nullIfEmpty(r.status),
+      statusNote: r.statusNote || '',
+      address: r.address || '',
+      access: r.access || '',
+      description: r.description || '',
+      warnings: r.warnings ? r.warnings.split('|') : [],
+      reliability: toNumber(r.reliability),
+      gmapsUrl: nullIfEmpty(r.gmapsUrl),
+      official: toBool(r.official),
+      officialUrl: nullIfEmpty(r.officialUrl),
+      refImage: refImage ? proxyImage(refImage) : null,
+      srcAnime: toBool(r.srcAnime),
+      srcGame: toBool(r.srcGame),
+      guide: toBool(r.guide),
+      episodes: r.episodes ? r.episodes.split('|') : [],
+    };
+  });
 }
 
 // spot_id ごとの複数シーン（scenes.csv）。1スポットに複数シーン（名前・画像複数・説明）を
@@ -83,7 +95,7 @@ function loadScenes(): Map<string, Scene[]> {
       order: toNumber(r.order) ?? 0,
       name: r.name,
       description: r.description || '',
-      images: r.images ? r.images.split('|') : [],
+      images: r.images ? r.images.split('|').map(proxyImage) : [],
     });
     bySpot.set(r.spot_id, list);
   });
